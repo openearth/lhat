@@ -26,10 +26,14 @@ Navigate to the directory where you cloned the repository and create a conda env
 
       >> conda env create -f environment.yml
 
-An example file has been made to run LHAT.
+An example file has been made to showcase how LHAT can be parameterised and run. See: example.py
+Or alternatively, run the script as follows:
 
 .. code-block:: text
+
       >> python example.py
+
+
 
 .. automodule:: lhat
     :imported-members:
