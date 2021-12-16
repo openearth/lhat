@@ -32,9 +32,7 @@ from osgeo import gdal, ogr, osr
 # Initialize earth engine. If this doesn't work,
 # check that you have an Earth Engine account AND
 # that you entered the authentication code correctly.
-'''
-ee dependency should eventually be phased out
-'''
+
 ee.Initialize()
 
 class inputData:
@@ -549,7 +547,7 @@ class inputs:
         # create empty output raster
         out_fn = self.input_dir / f'{pathlib.Path(vectorpath).stem}.tif'
         driver = gdal.GetDriverByName('GTiff')
-        out_ds = driver.Create(r'D:\EO\LandslideDetectionSO2021\master' + r'\\' + str(out_fn), cols, rows, 1, gdal.GDT_Byte)
+        out_ds = driver.Create(str(out_fn), cols, rows, 1, gdal.GDT_Byte)
 
         # set geotransform and projection
         gt = (xmin, self.reference.xsize, 0, ymax, 0, -(self.reference.ysize))
@@ -568,6 +566,8 @@ class inputs:
 
     def proximity2feature(self,
                       rastervec: str):
+        '''
+        '''
         # open rasterized file and get information
         ds = gdal.Open(rastervec, 0)
         band = ds.GetRasterBand(1)
@@ -577,7 +577,7 @@ class inputs:
         rows = ds.RasterYSize
 
         # create empty proximity raster
-        out_fn = '../data/raster/COL_rails_proximity.tif'
+        out_fn = self.input_dir / f'{pathlib.Path(rastervec.stem)}_proximity.tif'
         driver = gdal.GetDriverByName('GTiff')
         out_ds = driver.Create(out_fn, cols, rows, 1, gdal.GDT_Float32)
         out_ds.SetGeoTransform(gt)
@@ -585,10 +585,10 @@ class inputs:
         out_band = out_ds.GetRasterBand(1)
 
         # compute proximity
-        gdal.ComputeProximity(band, out_band, ['VALUES=1', 'DISTUNITS=PIXEL'])
+        # Caution: Ensure your data are in UTM coordinates or distance
+        # will be wrongly calculated!
+        gdal.ComputeProximity(band, out_band, ['VALUES=1', 'DISTUNITS=GEO'])
 
         # delete input and output rasters
         del ds, out_ds
-        return
-
-testclip = r"D:\EO\LandslideDetectionSO2021\backup_jamaica\test_faults_clip.shp"
+        return out_fn
