@@ -2,7 +2,7 @@ lhat package
 ============
 
 lhat.IO: Data operations on input and output data
---------------
+-------------------------------------------------
 
 .. automodule:: lhat.IO
    :members:
@@ -10,7 +10,7 @@ lhat.IO: Data operations on input and output data
    :show-inheritance:
 
 lhat.Model: Model parameterisation and grid search
------------------
+--------------------------------------------------
 
 .. automodule:: lhat.Model
    :members:
