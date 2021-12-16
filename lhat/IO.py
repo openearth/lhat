@@ -1,22 +1,3 @@
-'''
-    Landslide Hazard Assessment Tool (LHAT)
-    Copyright (C) 2021 Robyn Gwee, Giorgio Santinelli,
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-'''
-
-
 import pathlib, rasterio, warnings, math, ee, urllib
 import rioxarray as rx
 from rasterio.enums import Resampling
@@ -26,7 +7,7 @@ import numpy as np
 from owslib.wcs import WebCoverageService
 from pyproj import Transformer
 import pandas as pd
-import Model as md
+from . import Model as md
 from osgeo import gdal, ogr, osr
 
 # Initialize earth engine. If this doesn't work,
@@ -36,7 +17,27 @@ from osgeo import gdal, ogr, osr
 ee.Initialize()
 
 class inputData:
+    '''
+    Parameters
+    ----------
 
+    name: str
+        Name of input data. Eg. 'road', 'dem', 'vegetation', etc..
+
+    path: str
+        Absolute or relative path to where the input data is located
+
+    dtype: str ('numerical' or 'categorical')
+        The data type is important to define as categorical and numerical datasets
+        are treated differently in the IO module.
+
+    Returns
+    -------
+
+    :class:`inputData`:
+        An object containing attributes of input data including name, filepath
+        and data type
+    '''
     def __init__(self, name, path, dtype):
         self.name = name
         self.path = pathlib.Path(path)
@@ -47,45 +48,61 @@ class inputs:
     The inputs class initialises a project and saves all relevant data within
     the project folder.
 
-    project_name: Name of project eg. 'Jamaica'
 
-    crs: CRS to reproject all input data to and for model result
+    Initialize project with various inputs.
 
-    landslide_points: Path to landslide points file (takes geoJSON or shapefile)
+    Parameters
+    ----------
 
-    bbox: Bounding box. Required for downloading or clipping online datasets
-          Takes in a list of coordinates in WGS84, or a shapefile, or a geoJSON.
-          Eg.. [[x1,y1], [x1,y2], [x2,y2], [x2,y1], [x1,y1]]
+    project_name: str
+        Name of project eg. 'Jamaica'
 
-    random_state: Takes an int of any value to determine a reproducible randomness.
-                  Results can be replicated in this manner.
+    crs: str
+        CRS to reproject all input data to and for model result
 
-    inputs: Dictionary of input data pointing to paths or decision to include
-            it in the model. An example of how to define inputs is provided
-            in ``example.py``.
+    landslide_points: str
+        Path to landslide points file (takes geoJSON or shapefile)
 
-    no_data: list of potential no_data values. Preferably, you should define
-             a constant no_data value for all your input datasets, so that valid
-             data will NOT be accidentally masked out. No warranty is provided
-             for erroneous results if any no data values are a valid value in
-             another dataset.
+    bbox: list
+        Bounding box. Required for downloading or clipping online datasets.
+        Takes in a list of coordinates in WGS84, or a shapefile, or a geoJSON.
+        Example: [[x1,y1], [x1,y2], [x2,y2], [x2,y1], [x1,y1]]
 
-    pixel_size: Resolution of pixel size. WARNING - pixel size is only relevant
-                for datasets obtained online. The pixel size will therefore
-                dictate the resolution that the (relevant) input data will be
-                in.
+    random_state: int
+        Takes an int of any value to determine a (reproducible) state of randomness.
+        Determining the random state allows for results to be replicated if needed.
 
-    kernel_size: To account for potential uncertainty in landslide-striken areas,
-                 a default [3 x 3] window of pixels around landslide points
-                 is classed as 'landslide'. The user can define a larger kernel size
-                 of ODD numbers eg. 3, 5, 7, 9 etc, depending on the resolution
-                 of their input datasets.
+    inputs: dict
+        Dictionary of input data pointing to paths or decision to include
+        it in the model. An example of how to define inputs is provided
+        in ``example.py``.
+
+    no_data: list
+        list of potential no_data values. Preferably, you should define
+        a constant no_data value for all your input datasets, so that valid
+        data will NOT be accidentally masked out. No warranty is provided
+        for erroneous results if any no data values are a valid value in
+        another dataset.
+
+    pixel_size: int
+        Resolution of pixel size. WARNING - pixel size is only relevant
+        for datasets obtained online. The pixel size will therefore
+        dictate the resolution that the (relevant) input data will be in.
+
+    kernel_size: int = 3
+        To account for potential uncertainty in landslide-striken areas,
+        a default [3 x 3] window of pixels around landslide points
+        is classed as 'landslide'. The user can define a larger kernel size
+        of ODD numbers eg. 3, 5, 7, 9 etc, depending on the resolution
+        of their input datasets.
 
     Returns
-    --------------
-    A pandas.DataFrame object is returned containing columns of input data as \
-    defined by the user [x] as well as another pandas.DataFrame object of binary \
-    classes. Each row represents a pixel index in the stack of input datasets.
+    -------
+    :object:`pandas.DataFrame`:
+        Object is returned containing columns of input data as defined by
+        the user [x] as well as another pandas.DataFrame object of classes.
+        Each row represents a pixel index in the stack of input datasets.
+
     '''
 
     def __init__(self,
