@@ -21,13 +21,13 @@ class inputData:
     Parameters
     ----------
 
-    name: str
+    :param name: str
         Name of input data. Eg. 'road', 'dem', 'vegetation', etc..
 
-    path: str
+    :param path: str
         Absolute or relative path to where the input data is located
 
-    dtype: str ('numerical' or 'categorical')
+    :param dtype: str ('numerical' or 'categorical')
         The data type is important to define as categorical and numerical datasets
         are treated differently in the IO module.
 
