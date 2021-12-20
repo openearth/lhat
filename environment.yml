@@ -1,4 +1,4 @@
-name: lsm
+name: lhat
 channels:
   - conda-forge
 dependencies:
