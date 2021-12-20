@@ -19,7 +19,8 @@ sphinx:
 
 # Optionally declare the Python requirements required to build your docs
 
-conda:
-  environment: environment.yml
+python:
+    install:
+    - requirements: docs/requirements.txt
 submodules:
     include: all
