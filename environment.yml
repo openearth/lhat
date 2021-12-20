@@ -12,8 +12,6 @@ dependencies:
   - owslib
   - earthengine-api
   - pytest
-  - shapely
-  - affine
   - pandas
   - scikit-learn
   - gdal
