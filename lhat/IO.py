@@ -7,7 +7,7 @@ import numpy as np
 from owslib.wcs import WebCoverageService
 from pyproj import Transformer
 import pandas as pd
-from . import Model as md
+from lhat import Model as md
 from osgeo import gdal, ogr, osr
 
 # Initialize earth engine. If this doesn't work,
@@ -98,7 +98,7 @@ class inputs:
 
     Returns
     -------
-    :object:`pandas.DataFrame`:
+    `pandas.DataFrame`:
         Object is returned containing columns of input data as defined by
         the user [x] as well as another pandas.DataFrame object of classes.
         Each row represents a pixel index in the stack of input datasets.
