@@ -17,7 +17,8 @@ from osgeo import gdal, ogr, osr
 #ee.Initialize()
 
 class inputData:
-    '''
+    '''Instance of individual input data containing their name, file path and data type.
+
     Parameters
     ----------
 
@@ -31,10 +32,11 @@ class inputData:
         The data type is important to define as categorical and numerical datasets
         are treated differently in the IO module.
 
-    Returns
-    -------
 
-    :class:`inputData`:
+    Returns
+    --------
+
+    returns: :class:`inputData`:
         An object containing attributes of input data including name, filepath
         and data type
     '''
@@ -44,52 +46,49 @@ class inputData:
         self.dtype = dtype
 
 class inputs:
-    '''
-    The inputs class initialises a project and saves all relevant data within
+    '''The inputs class initialises a project and saves all relevant data within
     the project folder.
 
-
-    Initialize project with various inputs.
 
     Parameters
     ----------
 
-    project_name: str
+    :param project_name: str
         Name of project eg. 'Jamaica'
 
-    crs: str
+    :param crs: str
         CRS to reproject all input data to and for model result
 
-    landslide_points: str
+    :param landslide_points: str
         Path to landslide points file (takes geoJSON or shapefile)
 
-    bbox: list
+    :param bbox: list
         Bounding box. Required for downloading or clipping online datasets.
         Takes in a list of coordinates in WGS84, or a shapefile, or a geoJSON.
         Example: [[x1,y1], [x1,y2], [x2,y2], [x2,y1], [x1,y1]]
 
-    random_state: int
+    :param random_state: int
         Takes an int of any value to determine a (reproducible) state of randomness.
         Determining the random state allows for results to be replicated if needed.
 
-    inputs: dict
+    :param inputs: dict
         Dictionary of input data pointing to paths or decision to include
         it in the model. An example of how to define inputs is provided
         in ``example.py``.
 
-    no_data: list
+    :param no_data: list
         list of potential no_data values. Preferably, you should define
         a constant no_data value for all your input datasets, so that valid
         data will NOT be accidentally masked out. No warranty is provided
         for erroneous results if any no data values are a valid value in
         another dataset.
 
-    pixel_size: int
+    :param pixel_size: int
         Resolution of pixel size. WARNING - pixel size is only relevant
         for datasets obtained online. The pixel size will therefore
         dictate the resolution that the (relevant) input data will be in.
 
-    kernel_size: int = 3
+    :param kernel_size: int = 3
         To account for potential uncertainty in landslide-striken areas,
         a default [3 x 3] window of pixels around landslide points
         is classed as 'landslide'. The user can define a larger kernel size
@@ -389,6 +388,9 @@ class inputs:
          Generates list of valid arrays. A mask is made of only valid arrays
          across stack of arrays.
 
+         Returns
+         --------
+         :return A harmonised stack of arrays where all valid data exists per pixel
          '''
          self.arrays = []
          self.names = []
@@ -422,10 +424,21 @@ class inputs:
 
     def matrix_window(self,
                x, y, ID):
-
          '''
-         kernel size is a default value of 3: can only be an odd number
-         Generates a dataframe of x and y coordinates
+         Using landslide coordinates, takes a kernel (of default size 3) and
+         generates a dataframe of x/y coordinates for all pixels within the kernel
+
+         Parameters
+         -----------
+         :param x: float
+            Longitudinal coordinate
+
+         :param y: float
+            Latitudinal coordinate
+
+         Returns
+         --------
+         :return Dataframe of x/y coordinates for all pixels within kernel window
          '''
 
          dd = rasterio.open(self.reference.path, lock = False)
@@ -445,11 +458,11 @@ class inputs:
     def generate_xy(self):
         '''
         Takes the landslide points and selects pixels that overlap with the landslide points
-        as well as the matrix area around it. Kernel is definable by user.
+        as well as the matrix area around it. Kernel is definable by user when initiating project.
 
-        Returns a dataframe of raster values in those indexes
-
-        to-do: use random_State attribute for sampling
+        Returns
+        --------
+        Dataframe of (flattened) raster values in those indexes
         '''
         self.valid_arrays()
 
@@ -459,7 +472,6 @@ class inputs:
         points = [(a, b) for a, b in zip(self.landslide_points.geometry.x.tolist(),
                                           self.landslide_points.geometry.y.tolist())]
 
-        #df = pd.DataFrame(columns = ['x', 'y', 'id'])
         iid = [] #Generate list of index tuples
 
         for idx, pts in enumerate(points):
@@ -505,7 +517,8 @@ class inputs:
                                          columns = self.names)
         nldf = nldf.drop(columns=['landslide_ids']).dropna()
 
-        self.nonlandslide_pixels = nldf.sample(n = len(self.landslide_pixels.index))
+        self.nonlandslide_pixels = nldf.sample(n = len(self.landslide_pixels.index),
+                                               random_sate = self.random_state)
         self.nonlandslide_pixels['id'] = 0
 
         self.model_input = pd.concat([self.landslide_pixels,
@@ -529,7 +542,26 @@ class inputs:
                   y,
                   modelExist: bool):
         '''
-        model choices:  ['SVM', 'RF', 'LR']. Default: 'SVM' (Support Vector Machine)
+        Runs the machine learning model based on model choice, input data (x) and
+        class assigned to each pixel (y: landslide or not).
+
+        Parameters
+        -----------
+
+        :param model: str (default: 'SVM')
+            Choose a machine learning model to run. Choices include: Support Vector Machine 'SVM',
+            Random Forest 'RF' or Logistic Regression 'LR'.
+
+        :param x: pandas.dataframe
+            Input dataset flattened from array to 1-dimensional data (pandas.dataframe)
+
+        :param y: pandas.dataframe
+            pandas.dataframe containing classes assigned to each row of input data.
+            0 = no landslide; 1 = landslide
+
+        Returns
+        --------
+        Landslide susceptibility map in GeoTIFF format, available in output folder
         '''
         self.model = model
 
@@ -551,7 +583,17 @@ class inputs:
 
     def vector2raster(self,
                       vectorpath):
+        '''
+        Converts a vector shapefile into a raster, taking the reference dataset's
+        grid size.
 
+        :param vectorpath: str
+            Place filepath to vector layer to rasterize
+
+        Returns
+        --------
+        A rasterized vector file in GeoTIFF format
+        '''
         # open shapefile, get layer and get extent
         ds = ogr.Open(vectorpath)
         lyr = ds.GetLayer()
@@ -584,7 +626,14 @@ class inputs:
     def proximity2feature(self,
                       rastervec: str):
         '''
+        Generates a proximity raster dataset based on the input rasterized vector
+
+        :param rastervec: str
+            Path to the rasterized vector file
+
+        Returns
         '''
+
         # open rasterized file and get information
         ds = gdal.Open(rastervec, 0)
         band = ds.GetRasterBand(1)

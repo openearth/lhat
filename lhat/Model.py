@@ -57,7 +57,10 @@ class MachineLearning:
 
 
     def trainTestSplit(self):
-
+        '''
+        Splits the dataset into training and test sets. Test size is by default
+        determined as 20% of the dataset.
+        '''
         # Split and Scale the data
         X_train, X_test, y_train, y_test = train_test_split(self.X, self.y, test_size=0.20, random_state=101)
 
@@ -75,9 +78,18 @@ class MachineLearning:
     def trainModel(self, baselineModel, modelParameters):
 
         '''
-        :param baselineModel: This is the model that we use for training: SVC, RF, LR
-        :param modelParameters: This is a set of values for hyper parameters of the model that is used in cross-validation
-        :return: the best model
+        Trains the machine learning model of choice and performs self parameterisation
+        based on GridSearchCV. Parameters achieving the highest accuracy are selected.
+
+        :param baselineModel:
+            This is the model that is used for training (based on choice by user, either
+            Support Vector, Random Forest or Logistic Regression)
+
+        :param modelParameters:
+            This is a set of values for hyper parameters of the model that is used in cross-validation
+
+        :return:
+            The best model
         '''
 
         #Cross-Validation
@@ -100,7 +112,24 @@ class MachineLearning:
         return best_model
 
     def evaluateTrainedModel(self, model, X , y):
+        '''
+        The trained model is evaluated for accuracy and a confusion matrix is made
 
+        :param model:
+            Machine learning model of choice paramterised by best performing in terms of accuracy
+
+        :param X:
+            Input training data to perform accuracy scoring on
+
+        :param y:
+            Actual landslide class (1 = landslide; 0 = no landslide) to compare with
+            predicted class.
+
+        Returns
+        --------
+        :return:
+            Prints accuracy score and confusion matrix
+        '''
         predictions = model.predict(X) #fit to scaled object
         accuracy = accuracy_score(y, predictions)
         confusion = pd.DataFrame(confusion_matrix(y, predictions))
@@ -191,11 +220,11 @@ class MachineLearning:
         estimator : estimator object implementing 'fit'
             The object to use to fit the data.
         """
-        
+
         n_classes = 2 # binary classification
 
         ref = rasterio.open(reference, lock = False)
-        
+
         with rasterio.open(file_path, "w",
                            driver = 'GTiff',
                            height = ref.height,
@@ -211,7 +240,7 @@ class MachineLearning:
             result = np.ma.filled(result, fill_value = -9999)
             dst.write(result.astype(np.float64))
             dst.close()
-        
+
         ref.close()
         return
 
@@ -239,7 +268,7 @@ class MachineLearning:
         # reshape each image block matrix into a 2D matrix
         # first reorder into rows, cols, bands (transpose)
         # then resample into 2D array (rows=sample_n, cols=band_values)
-        
+
         n_features, rows, cols = img.shape[0], img.shape[1], img.shape[2]
         mask2d = img.mask.any(axis=0)
         n_samples = rows * cols
