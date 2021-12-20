@@ -3,3 +3,15 @@ channels:
   - conda-forge
 dependencies:
   - rasterio
+  - geopandas
+  - numpy
+  - scipy
+  - rioxarray
+  - owslib
+  - pytest
+  - earthengine-api
+  - scikit-learn
+  - shapely
+  - affine
+  - pandas
+  - gdal
