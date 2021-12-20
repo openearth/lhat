@@ -1,0 +1,29 @@
+lsm package
+===========
+
+Submodules
+----------
+
+lsm.IO module
+-------------
+
+.. automodule:: lsm.IO
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+lsm.Model module
+----------------
+
+.. automodule:: lsm.Model
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: lsm
+   :members:
+   :undoc-members:
+   :show-inheritance:
