@@ -3,12 +3,14 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lhat package &mdash; LHAT 0.1 documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <title>lhat package &mdash; LHAT 0.1 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
-  <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
@@ -33,7 +35,7 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption"><span class="caption-text">Contents:</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">lhat</a><ul class="current">
 <li class="toctree-l2 current"><a class="current reference internal" href="#">lhat package</a><ul>
@@ -71,12 +73,12 @@
            <div itemprop="articleBody">
              
   <div class="section" id="lhat-package">
-<h1>lhat package<a class="headerlink" href="#lhat-package" title="Permalink to this headline">¶</a></h1>
+<h1>lhat package<a class="headerlink" href="#lhat-package" title="Permalink to this headline"></a></h1>
 <div class="section" id="module-lhat.IO">
-<span id="lhat-io-data-operations-on-input-and-output-data"></span><h2>lhat.IO: Data operations on input and output data<a class="headerlink" href="#module-lhat.IO" title="Permalink to this headline">¶</a></h2>
+<span id="lhat-io-data-operations-on-input-and-output-data"></span><h2>lhat.IO: Data operations on input and output data<a class="headerlink" href="#module-lhat.IO" title="Permalink to this headline"></a></h2>
 <dl class="py class">
-<dt id="lhat.IO.inputData">
-<em class="property">class </em><code class="sig-prename descclassname">lhat.IO.</code><code class="sig-name descname">inputData</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">name</span></em>, <em class="sig-param"><span class="n">path</span></em>, <em class="sig-param"><span class="n">dtype</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lhat.IO.inputData" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="lhat.IO.inputData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lhat.IO.</span></span><span class="sig-name descname"><span class="pre">inputData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lhat.IO.inputData" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -98,8 +100,8 @@ and data type</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="lhat.IO.inputs">
-<em class="property">class </em><code class="sig-prename descclassname">lhat.IO.</code><code class="sig-name descname">inputs</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">project_name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">crs</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">landslide_points</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">random_state</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">bbox</span><span class="p">:</span> <span class="n">list</span></em>, <em class="sig-param"><span class="n">inputs</span><span class="p">:</span> <span class="n">dict</span></em>, <em class="sig-param"><span class="n">no_data</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>list<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">pixel_size</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">kernel_size</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">3</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lhat.IO.inputs" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="lhat.IO.inputs">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lhat.IO.</span></span><span class="sig-name descname"><span class="pre">inputs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">project_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">crs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">landslide_points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bbox</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pixel_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lhat.IO.inputs" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>The inputs class initialises a project and saves all relevant data within
 the project folder.</p>
@@ -143,8 +145,8 @@ Each row represents a pixel index in the stack of input datasets.</p>
 </dd>
 </dl>
 <dl class="py method">
-<dt id="lhat.IO.inputs.generate_xy">
-<code class="sig-name descname">generate_xy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#lhat.IO.inputs.generate_xy" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="lhat.IO.inputs.generate_xy">
+<span class="sig-name descname"><span class="pre">generate_xy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#lhat.IO.inputs.generate_xy" title="Permalink to this definition"></a></dt>
 <dd><p>Takes the landslide points and selects pixels that overlap with the landslide points
 as well as the matrix area around it. Kernel is definable by user.</p>
 <p>Returns a dataframe of raster values in those indexes</p>
@@ -152,68 +154,68 @@ as well as the matrix area around it. Kernel is definable by user.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="lhat.IO.inputs.matrix_window">
-<code class="sig-name descname">matrix_window</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">ID</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lhat.IO.inputs.matrix_window" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="lhat.IO.inputs.matrix_window">
+<span class="sig-name descname"><span class="pre">matrix_window</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ID</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lhat.IO.inputs.matrix_window" title="Permalink to this definition"></a></dt>
 <dd><p>kernel size is a default value of 3: can only be an odd number
 Generates a dataframe of x and y coordinates</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="lhat.IO.inputs.proximity2feature">
-<code class="sig-name descname">proximity2feature</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">rastervec</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lhat.IO.inputs.proximity2feature" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="lhat.IO.inputs.proximity2feature">
+<span class="sig-name descname"><span class="pre">proximity2feature</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rastervec</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lhat.IO.inputs.proximity2feature" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="lhat.IO.inputs.run_model">
-<code class="sig-name descname">run_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">x</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">modelExist</span><span class="p">:</span> <span class="n">bool</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lhat.IO.inputs.run_model" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="lhat.IO.inputs.run_model">
+<span class="sig-name descname"><span class="pre">run_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modelExist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lhat.IO.inputs.run_model" title="Permalink to this definition"></a></dt>
 <dd><p>model choices:  [‘SVM’, ‘RF’, ‘LR’]. Default: ‘SVM’ (Support Vector Machine)</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="lhat.IO.inputs.valid_arrays">
-<code class="sig-name descname">valid_arrays</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#lhat.IO.inputs.valid_arrays" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="lhat.IO.inputs.valid_arrays">
+<span class="sig-name descname"><span class="pre">valid_arrays</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#lhat.IO.inputs.valid_arrays" title="Permalink to this definition"></a></dt>
 <dd><p>Generates list of valid arrays. A mask is made of only valid arrays
 across stack of arrays.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="lhat.IO.inputs.vector2raster">
-<code class="sig-name descname">vector2raster</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">vectorpath</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lhat.IO.inputs.vector2raster" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="lhat.IO.inputs.vector2raster">
+<span class="sig-name descname"><span class="pre">vector2raster</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vectorpath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lhat.IO.inputs.vector2raster" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 </div>
 <div class="section" id="module-lhat.Model">
-<span id="lhat-model-model-parameterisation-and-grid-search"></span><h2>lhat.Model: Model parameterisation and grid search<a class="headerlink" href="#module-lhat.Model" title="Permalink to this headline">¶</a></h2>
+<span id="lhat-model-model-parameterisation-and-grid-search"></span><h2>lhat.Model: Model parameterisation and grid search<a class="headerlink" href="#module-lhat.Model" title="Permalink to this headline"></a></h2>
 <dl class="py class">
-<dt id="lhat.Model.MachineLearning">
-<em class="property">class </em><code class="sig-prename descclassname">lhat.Model.</code><code class="sig-name descname">MachineLearning</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">y</span></em>, <em class="sig-param"><span class="n">pathToSavedModel</span></em>, <em class="sig-param"><span class="n">model_name</span><span class="o">=</span><span class="default_value">'SVM'</span></em>, <em class="sig-param"><span class="n">modelExist</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lhat.Model.MachineLearning" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="lhat.Model.MachineLearning">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">lhat.Model.</span></span><span class="sig-name descname"><span class="pre">MachineLearning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pathToSavedModel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'SVM'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modelExist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lhat.Model.MachineLearning" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py attribute">
-<dt id="lhat.Model.MachineLearning.bestModel">
-<code class="sig-name descname">bestModel</code><a class="headerlink" href="#lhat.Model.MachineLearning.bestModel" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="lhat.Model.MachineLearning.bestModel">
+<span class="sig-name descname"><span class="pre">bestModel</span></span><a class="headerlink" href="#lhat.Model.MachineLearning.bestModel" title="Permalink to this definition"></a></dt>
 <dd><p>Model name is not correctly specified!</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="lhat.Model.MachineLearning.evaluateTrainedModel">
-<code class="sig-name descname">evaluateTrainedModel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model</span></em>, <em class="sig-param"><span class="n">X</span></em>, <em class="sig-param"><span class="n">y</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lhat.Model.MachineLearning.evaluateTrainedModel" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="lhat.Model.MachineLearning.evaluateTrainedModel">
+<span class="sig-name descname"><span class="pre">evaluateTrainedModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lhat.Model.MachineLearning.evaluateTrainedModel" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="lhat.Model.MachineLearning.loadMLModel">
-<code class="sig-name descname">loadMLModel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#lhat.Model.MachineLearning.loadMLModel" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="lhat.Model.MachineLearning.loadMLModel">
+<span class="sig-name descname"><span class="pre">loadMLModel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#lhat.Model.MachineLearning.loadMLModel" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="lhat.Model.MachineLearning.logisticRegression">
-<code class="sig-name descname">logisticRegression</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#lhat.Model.MachineLearning.logisticRegression" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="lhat.Model.MachineLearning.logisticRegression">
+<span class="sig-name descname"><span class="pre">logisticRegression</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#lhat.Model.MachineLearning.logisticRegression" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="lhat.Model.MachineLearning.predict_proba">
-<code class="sig-name descname">predict_proba</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">raster_stack</span></em>, <em class="sig-param"><span class="n">estimator</span></em>, <em class="sig-param"><span class="n">scaler</span></em>, <em class="sig-param"><span class="n">file_path</span></em>, <em class="sig-param"><span class="n">reference</span></em>, <em class="sig-param"><span class="n">no_data</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lhat.Model.MachineLearning.predict_proba" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="lhat.Model.MachineLearning.predict_proba">
+<span class="sig-name descname"><span class="pre">predict_proba</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raster_stack</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">estimator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">no_data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lhat.Model.MachineLearning.predict_proba" title="Permalink to this definition"></a></dt>
 <dd><p>Apply class probability prediction of a scikit learn model to a RasterStack.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -223,8 +225,8 @@ across stack of arrays.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="lhat.Model.MachineLearning.probfun">
-<code class="sig-name descname">probfun</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">img</span></em>, <em class="sig-param"><span class="n">estimator</span></em>, <em class="sig-param"><span class="n">scaler</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lhat.Model.MachineLearning.probfun" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="lhat.Model.MachineLearning.probfun">
+<span class="sig-name descname"><span class="pre">probfun</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">estimator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaler</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lhat.Model.MachineLearning.probfun" title="Permalink to this definition"></a></dt>
 <dd><p>Class probabilities function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -246,23 +248,23 @@ associated with each class. ndarray dimensions are in the order of
 </dd></dl>
 
 <dl class="py method">
-<dt id="lhat.Model.MachineLearning.randomForest">
-<code class="sig-name descname">randomForest</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#lhat.Model.MachineLearning.randomForest" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="lhat.Model.MachineLearning.randomForest">
+<span class="sig-name descname"><span class="pre">randomForest</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#lhat.Model.MachineLearning.randomForest" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="lhat.Model.MachineLearning.saveMLModel">
-<code class="sig-name descname">saveMLModel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#lhat.Model.MachineLearning.saveMLModel" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="lhat.Model.MachineLearning.saveMLModel">
+<span class="sig-name descname"><span class="pre">saveMLModel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#lhat.Model.MachineLearning.saveMLModel" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="lhat.Model.MachineLearning.supportVectorMachine">
-<code class="sig-name descname">supportVectorMachine</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#lhat.Model.MachineLearning.supportVectorMachine" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="lhat.Model.MachineLearning.supportVectorMachine">
+<span class="sig-name descname"><span class="pre">supportVectorMachine</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#lhat.Model.MachineLearning.supportVectorMachine" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="lhat.Model.MachineLearning.trainModel">
-<code class="sig-name descname">trainModel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">baselineModel</span></em>, <em class="sig-param"><span class="n">modelParameters</span></em><span class="sig-paren">)</span><a class="headerlink" href="#lhat.Model.MachineLearning.trainModel" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="lhat.Model.MachineLearning.trainModel">
+<span class="sig-name descname"><span class="pre">trainModel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">baselineModel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modelParameters</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#lhat.Model.MachineLearning.trainModel" title="Permalink to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -277,8 +279,8 @@ associated with each class. ndarray dimensions are in the order of
 </dd></dl>
 
 <dl class="py method">
-<dt id="lhat.Model.MachineLearning.trainTestSplit">
-<code class="sig-name descname">trainTestSplit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#lhat.Model.MachineLearning.trainTestSplit" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="lhat.Model.MachineLearning.trainTestSplit">
+<span class="sig-name descname"><span class="pre">trainTestSplit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#lhat.Model.MachineLearning.trainTestSplit" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>

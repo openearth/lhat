@@ -2,4 +2,20 @@ name: lhat
 channels:
   - conda-forge
 dependencies:
+  - python==3.7.9
+  - rasterstats
+  - geopandas
+  - numpy
+  - scipy
   - rasterio
+  - rioxarray
+  - owslib
+  - earthengine-api
+  - pytest
+  - shapely
+  - affine
+  - pandas
+  - scikit-learn
+  - matplotlib
+  - seaborn
+  - gdal
