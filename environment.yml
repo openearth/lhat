@@ -16,6 +16,4 @@ dependencies:
   - affine
   - pandas
   - scikit-learn
-  - matplotlib
-  - seaborn
   - gdal
