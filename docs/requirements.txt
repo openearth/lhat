@@ -1,1 +1,13 @@
 rasterio==1.2.0
+geopandas
+numpy
+scipy
+rioxarray
+owslib
+earthengine-api
+pytest
+shapely
+affine
+pandas
+scikit-learn
+gdal
