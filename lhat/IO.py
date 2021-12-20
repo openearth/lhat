@@ -14,7 +14,7 @@ from osgeo import gdal, ogr, osr
 # check that you have an Earth Engine account AND
 # that you entered the authentication code correctly.
 
-ee.Initialize()
+#ee.Initialize()
 
 class inputData:
     '''
