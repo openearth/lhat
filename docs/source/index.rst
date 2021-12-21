@@ -7,47 +7,38 @@ Welcome to LHAT's documentation!
 
 Landslide Hazard Assessment Tool (LHAT) is a rapid assessment tool for landslide hazards around the world.
 
-This online documentation describes the tool, its usage and the model choices that can be used to derive landslide susceptibility maps.
-For further enquiries, please approach the following developers: Giorgio Santinelli (giorgio.santinelli@deltares.nl) and Robyn Gwee (robyn.gwee@deltares.nl)
+This online documentation describes the tool, installation and its usage to
+derive landslide susceptibility maps.
 
 
-Installing LHAT
-===============
+What is LHAT?
+=============
 
-Clone the LHAT repository locally from https://github.com/openearth/lhat
-
-.. code-block:: text
-
-      >> git clone https://github.com/openearth/lhat.git
-
-Navigate to the directory where you cloned the repository and create a conda environment from the yml file.
-
-.. code-block:: text
-
-      >> conda env create -f environment.yml
-
-An example file has been made to showcase how LHAT can be parameterised and run. See: example.py
-Or alternatively, run the script as follows:
-
-.. code-block:: text
-
-      >> python example.py
-
-
-
-.. automodule:: lhat
-    :imported-members:
-    :members:
-    :undoc-members:
-    :show-inheritance:
+LHAT is a GIS-based tool for data-driven forecasting of landslide susceptibilities.
+LHAT relies on globally and publicly available data sources as input for the data
+model. The user can choose between three machine learning models: Support Vector,
+Logistic Regression and Random Forest. These models are auto-parameterised using
+GridSearch and scored based on accuracy. Currently, the data inputs are considered
+static. LHAT has the option to be integrated into a forecasting framework for
+Early Warning Systems, and can receive dynamic and near real-time inputs such as
+precipitation data, inferometric Synthetic Aperture Radar (InSAR) maps, etc..
 
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-   modules
+setup
+lhat
+modules
 
+
+Contact
+=======
+For further enquiries, please approach the following developers: Giorgio Santinelli
+(giorgio.santinelli@deltares.nl) and Robyn Gwee (robyn.gwee@deltares.nl). LHAT
+has been developed with support from the Deltares Natural Hazards Strategic
+Research Program.
 
 
 Indices and tables
