@@ -39,7 +39,8 @@
 <li class="toctree-l1"><a class="reference internal" href="introduction.html">Landslide Hazard Assessment Tool</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Setting up</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#using-lhat">Using LHAT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#parameterising-lhat">Parameterising LHAT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-engineering-step">Data engineering step</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="lhat.html">LHAT Accessors, Methods and Objects</a></li>
@@ -74,21 +75,126 @@
 <div class="section" id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
 <p>Clone the LHAT repository locally from <a class="reference external" href="https://github.com/openearth/lhat">https://github.com/openearth/lhat</a></p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; git clone https://github.com/openearth/lhat.git
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&gt;&gt; git clone https://github.com/openearth/lhat.git
 </pre></div>
 </div>
 <p>Navigate to the directory where you cloned the repository and create a conda environment from the yml file.</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; conda env create -f environment.yml
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&gt;&gt; conda env create -f environment.yml
 </pre></div>
 </div>
-<p>An example file has been made to showcase how LHAT can be parameterised and run. See: example.py
-Or alternatively, run the script as follows:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&gt;&gt;&gt; python example.py
+<p>Once the environment is created, activate it and import lhat. Ensure your working
+directory is the same root folder of the cloned repository.</p>
+<p>Activate the conda environment
+.. code-block:: text</p>
+<blockquote>
+<div><p>&gt;&gt; conda activate lhat</p>
+</div></blockquote>
+<p>Import LHAT as so
+.. code-block:: python</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">lhat</span>
+</pre></div>
+</div>
+<p>Run the example script in your command line
+.. code-block:: text</p>
+<blockquote>
+<div><p>&gt;&gt; python example.py</p>
+</div></blockquote>
+</div>
+<div class="section" id="parameterising-lhat">
+<h2>Parameterising LHAT<a class="headerlink" href="#parameterising-lhat" title="Permalink to this headline">¶</a></h2>
+<p>The LHAT tool requires some parameters. The following arguments are necessary:
+* Name of project
+* Coordinate Referencing System (crs)
+* Path to where your landslide point dataset is (accepts JSON or .shp format)
+* A random state (necessary for reproducability of data)
+* Bounding box for clipping public assets
+* inputs (dictionary)
+* no_data values (can be a list or single value)
+* Pixel resolution (important for the retrieval of online datasets)
+* Kernel size (default 3x3): necessary for defining an area as ‘landslide’, since
+a landslide does not occur as locally as a point but as an area affected.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Not all input data have an online source. For those that do not, using
+the ‘online’ option will return nothing.</p>
+</div>
+<p>The following code snippet can be used for the initial parameterisation, also
+available in example.py that is placed in the root of the lhat repository.</p>
+<div class="literal-block-wrapper docutils container" id="id1">
+<div class="code-block-caption"><span class="caption-text">Example of parameterising inputs</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lhat</span> <span class="kn">import</span> <span class="n">IO</span> <span class="k">as</span> <span class="n">io</span>
+
+<span class="n">project</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">inputs</span><span class="p">(</span>
+
+    <span class="c1"># Define a project name. This will be the name of the folder in which</span>
+    <span class="c1"># your results are stored in</span>
+    <span class="n">project_name</span> <span class="o">=</span> <span class="s1">&#39;jamaica_test&#39;</span><span class="p">,</span>
+
+    <span class="c1"># The crs defined here will dictate which crs your input data is reprojected</span>
+    <span class="c1"># to, as well as your final result.</span>
+    <span class="n">crs</span> <span class="o">=</span> <span class="s1">&#39;epsg:3450&#39;</span><span class="p">,</span>
+
+    <span class="c1"># Provide a path to your landslide points. This is COMPULSORY for the model</span>
+    <span class="c1"># to work.</span>
+    <span class="n">landslide_points</span> <span class="o">=</span> <span class="s1">&#39;./Projects/jamaica-test/Input/dummy-landslides.json&#39;</span><span class="p">,</span>
+
+    <span class="c1"># Defining a random state (any integer) allows results to be reproducible</span>
+    <span class="n">random_state</span> <span class="o">=</span> <span class="mi">101</span><span class="p">,</span>
+
+    <span class="c1"># A bounding box is required when taking inputs from online sources such as</span>
+    <span class="c1"># geoservers. Use EPSG:4326 coordinates.</span>
+    <span class="n">bbox</span> <span class="o">=</span> <span class="p">[[</span><span class="o">-</span><span class="mf">77.73174142</span><span class="p">,</span> <span class="mf">18.02046626</span><span class="p">],</span>
+            <span class="p">[</span><span class="o">-</span><span class="mf">77.1858101</span><span class="p">,</span> <span class="mf">18.02046626</span><span class="p">],</span>
+            <span class="p">[</span><span class="o">-</span><span class="mf">77.1858101</span><span class="p">,</span> <span class="mf">18.34868174</span><span class="p">],</span>
+            <span class="p">[</span><span class="o">-</span><span class="mf">77.73174142</span><span class="p">,</span> <span class="mf">18.34868174</span><span class="p">],</span>
+            <span class="p">[</span><span class="o">-</span><span class="mf">77.73174142</span><span class="p">,</span> <span class="mf">18.02046626</span><span class="p">]],</span>
+
+    <span class="c1"># The following are inputs that are possible to use within LHAT.</span>
+    <span class="c1"># 3 choices for filepaths are: your_file_path, &#39;online&#39;, None.</span>
+    <span class="c1">#       your_file_path = path to the respective file in string</span>
+    <span class="c1">#       &#39;online&#39;       = an online, typically global source is relied on instead.</span>
+    <span class="c1">#                        For datasets that are calculated from another dataset</span>
+    <span class="c1">#                        such as slope/aspect/roughness, leave as &#39;online&#39;.</span>
+    <span class="c1">#       None           = None as an argument means that the dataset is NOT</span>
+    <span class="c1">#                        considered as input into the model.</span>
+    <span class="c1">#</span>
+    <span class="c1"># Data type is critical to define as categorical and numerical data undergo</span>
+    <span class="c1"># different data treatments.</span>
+    <span class="c1">#</span>
+    <span class="c1"># For &#39;reference&#39;, take care that if an online dataset is used as the reference,</span>
+    <span class="c1"># bbox arguments define the grid extent, while the pixel_size argument below</span>
+    <span class="c1"># defines the resolution of your reference (and therefore, your output) dataset.</span>
+    <span class="n">inputs</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;dem&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;filepath&#39;</span><span class="p">:</span> <span class="s1">&#39;online&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;data_type&#39;</span><span class="p">:</span> <span class="s1">&#39;numerical&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;slope&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;filepath&#39;</span><span class="p">:</span> <span class="s1">&#39;online&#39;</span><span class="p">,</span>
+                  <span class="s1">&#39;data_type&#39;</span><span class="p">:</span> <span class="s1">&#39;numerical&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;aspect&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;filepath&#39;</span><span class="p">:</span> <span class="s1">&#39;online&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;data_type&#39;</span><span class="p">:</span> <span class="s1">&#39;numerical&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;lithology&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;filepath&#39;</span><span class="p">:</span> <span class="s1">&#39;online&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;data_type&#39;</span><span class="p">:</span> <span class="s1">&#39;categorical&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;prox_road&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;filepath&#39;</span><span class="p">:</span> <span class="s2">&quot;.\Projects\jamaica-test\Input\prox_roads.tif&quot;</span><span class="p">,</span>
+                      <span class="s1">&#39;data_type&#39;</span><span class="p">:</span> <span class="s1">&#39;numerical&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;prox_river&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;filepath&#39;</span><span class="p">:</span> <span class="s2">&quot;.\Projects\jamaica-test\Input\prox_rivers.tif&quot;</span><span class="p">,</span>
+                        <span class="s1">&#39;data_type&#39;</span><span class="p">:</span> <span class="s1">&#39;numerical&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;reference&#39;</span><span class="p">:</span> <span class="s1">&#39;dem&#39;</span>
+        <span class="p">},</span>
+
+    <span class="n">no_data</span> <span class="o">=</span> <span class="o">-</span><span class="mi">9999</span><span class="p">,</span>  <span class="c1"># Optional argument to define no_data value. Propogates</span>
+                        <span class="c1"># for all processing of input files.</span>
+
+    <span class="n">pixel_size</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>    <span class="c1"># Optional argument to define pixel size.</span>
+                          <span class="c1"># Pixel size is only important for online datasets</span>
+
+    <span class="n">kernel_size</span> <span class="o">=</span> <span class="mi">3</span>     <span class="c1"># Define kernel size. Take into consideration pixel size</span>
+                        <span class="c1"># and full extent of landslide-prone areas.</span>
+    <span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="using-lhat">
-<h2>Using LHAT<a class="headerlink" href="#using-lhat" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="data-engineering-step">
+<h2>Data engineering step<a class="headerlink" href="#data-engineering-step" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 

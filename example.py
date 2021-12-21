@@ -7,13 +7,14 @@
 # necessary to parameterise both data preparation, alignment
 # and data extraction steps.
 # The following is a working example
+
 from lhat import IO as io
 
 project = io.inputs(
 
     # Define a project name. This will be the name of the folder in which
     # your results are stored in
-    project_name = 'Jamaica_test',
+    project_name = 'jamaica_test',
 
     # The crs defined here will dictate which crs your input data is reprojected
     # to, as well as your final result.
@@ -21,18 +22,18 @@ project = io.inputs(
 
     # Provide a path to your landslide points. This is COMPULSORY for the model
     # to work.
-    landslide_points = './Projects/Jamaica_Online/Input/landslide.json',
+    landslide_points = './Projects/jamaica-test/Input/dummy-landslides.json',
 
     # Defining a random state (any integer) allows results to be reproducible
     random_state = 101,
 
     # A bounding box is required when taking inputs from online sources such as
     # geoservers. Use EPSG:4326 coordinates.
-    bbox = [[-78.458148241,17.622775344],
-            [-76.1400330067,17.622775344],
-            [-76.1400330067,18.6459404825],
-            [-78.458148241,18.6459404825],
-            [-78.458148241,17.622775344]],
+    bbox = [[-77.73174142, 18.02046626],
+            [-77.1858101, 18.02046626],
+            [-77.1858101, 18.34868174],
+            [-77.73174142, 18.34868174],
+            [-77.73174142, 18.02046626]],
 
     # The following are inputs that are possible to use within LHAT.
     # 3 choices for filepaths are: your_file_path, 'online', None.
@@ -58,14 +59,12 @@ project = io.inputs(
                     'data_type': 'numerical'},
         'lithology': {'filepath': 'online',
                         'data_type': 'categorical'},
-        'prox_road': {'filepath': ".\Projects\Jamaica_test\Input\prox_roads.tif",
+        'prox_road': {'filepath': ".\Projects\jamaica-test\Input\prox_roads.tif",
                       'data_type': 'numerical'},
-        'prox_river': {'filepath': ".\Projects\Jamaica_test\Input\prox_rivers.tif",
+        'prox_river': {'filepath': ".\Projects\jamaica-test\Input\prox_rivers.tif",
                         'data_type': 'numerical'},
         'reference': 'dem'
         },
-        # Throw WARNING that reference is taken from online or offline
-        # and explain the consequences of online/offline
 
     no_data = -9999,  # Optional argument to define no_data value. Propogates
                         # for all processing of input files.
@@ -85,41 +84,11 @@ x, y = project.generate_xy()
 # pd.get_dummies() before passing on to project.run_model
 x = x.drop(columns=['landslide_ids'])
 
-#%%
-# for m in ['SVM', 'RF', 'LR']:
-#     project.run_model(
-#         x = x,
-#         y = y,
-#         model = m,
-#         modelExist = False
-#         ) # as an example
-project.run_model(
+# As an example
+for m in ['SVM', 'RF', 'LR']:
+    project.run_model(
         x = x,
         y = y,
-        model = 'SVM',
+        model = m,
         modelExist = False
-        ) # as an example
-
-# # Ranking of important datasets to include in model input
-# # proximity to faults (100m?) --> gdal.compute_proximity()
-
-# # Proximity to rivers
-
-# # Elevation relief (diff between min/max --> indication of energy within system)
-# # Curvature (result of DEM)
-# # Topographic Position Index
-
-# # proximity to road
-# # proximity to buildings(?)
-
-# # --> test on Bangladesh just in case
-# '''
-# EDA stage: export x/y dataframes for user to alter before ingestion into model
-# kernel: assign unique ID (related to landslide.json file) to all cells generated from
-# kernel window.
-# '''
-
-
-# test with everything offline
-# test with everything online
-# test with hybrid (offline/online)
+        )
