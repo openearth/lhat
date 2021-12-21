@@ -26,15 +26,20 @@ Activate the conda environment
 
       >> conda activate lhat
 
-Import LHAT as so
+
+Import LHAT as so below:
+
 .. code-block:: python
 
       >>> import lhat
 
+
 Run the example script in your command line
+
 .. code-block:: text
 
       >> python example.py
+
 
 
 
@@ -58,7 +63,7 @@ a landslide does not occur as locally as a point but as an area affected.
         the 'online' option will return nothing.
 
 The following code snippet can be used for the initial parameterisation, also
-available in example.py that is placed in the root of the lhat repository.
+available in `example.py` that is placed in the root of the lhat repository.
 
 .. literalinclude:: ../../example.py
         :language: python
