@@ -24,10 +24,9 @@ class inputData:
     :param path: str
         Absolute or relative path to where the input data is located
 
-    :param dtype: str ('numerical' or 'categorical')
-        The data type is important to define as categorical and numerical datasets
+    :param dtype: The data type is important to define as categorical and numerical datasets
         are treated differently in the IO module.
-
+    :type dtype: str ('numerical' or 'categorical')
 
     :return:
         An `inputData` object containing attributes of input data including name, filepath
@@ -44,47 +43,39 @@ class inputs:
     '''The inputs class initialises a project and saves all relevant data within
     the project folder.
 
-    :param project_name: str
-        Name of project eg. 'Jamaica'
-
-    :param crs: str
-        CRS to reproject all input data to and for model result
-
-    :param landslide_points: str
-        Path to landslide points file (takes geoJSON or shapefile)
-
-    :param bbox: list
-        Bounding box. Required for downloading or clipping online datasets.
+    :param project_name: Name of project eg. 'Jamaica'
+    :type project_name: str
+    :param crs: CRS to reproject all input data to and for model result
+    :type crs: str
+    :param landslide_points: Path to landslide points file (takes geoJSON or shapefile)
+    :type landslide_points: str
+    :param bbox: Bounding box. Required for downloading or clipping online datasets.
         Takes in a list of coordinates in WGS84, or a shapefile, or a geoJSON.
         Example: [[x1,y1], [x1,y2], [x2,y2], [x2,y1], [x1,y1]]
-
-    :param random_state: int
-        Takes an int of any value to determine a (reproducible) state of randomness.
+    :type bbox: list
+    :param random_state: Takes an int of any value to determine a (reproducible) state of randomness.
         Determining the random state allows for results to be replicated if needed.
-
-    :param inputs: dict
-        Dictionary of input data pointing to paths or decision to include
+    :type random_state: int
+    :param inputs: Dictionary of input data pointing to paths or decision to include
         it in the model. An example of how to define inputs is provided
-        in ``example.py``.
-
-    :param no_data: list
-        list of potential no_data values. Preferably, you should define
+        in `example.py`.
+    :type inputs: dict
+    :param no_data: list of potential no_data values. Preferably, you should define
         a constant no_data value for all your input datasets, so that valid
         data will NOT be accidentally masked out. No warranty is provided
         for erroneous results if any no data values are a valid value in
         another dataset.
-
-    :param pixel_size: int
-        Resolution of pixel size. WARNING - pixel size is only relevant
+    :type no_data: list
+    :param pixel_size: Resolution of pixel size. WARNING - pixel size is only relevant
         for datasets obtained online. The pixel size will therefore
         dictate the resolution that the (relevant) input data will be in.
-
-    :param kernel_size: int = 3
-        To account for potential uncertainty in landslide-striken areas,
+    :type pixel_size: int
+    :param kernel_size: To account for potential uncertainty in landslide-striken areas,
         a default [3 x 3] window of pixels around landslide points
         is classed as 'landslide'. The user can define a larger kernel size
         of ODD numbers eg. 3, 5, 7, 9 etc, depending on the resolution
         of their input datasets.
+    :type kernel_size: int = 3
 
     :return:
         Object is returned containing columns of input data as defined by
@@ -92,7 +83,6 @@ class inputs:
         Each row represents a pixel index in the stack of input datasets.
 
     :rtype: `pandas.DataFrame`
-
     '''
 
     def __init__(self,
@@ -514,8 +504,19 @@ class inputs:
                                       self.nonlandslide_pixels],
                                      sort=False).reset_index(drop=True)
 
-        #self.model_input = self.model_input.dropna().reset_index()
-        self.x = self.model_input[self.model_input.columns[~self.model_input.columns.isin(['id'])]]
+        # Dealing with categorical datasets
+        predummy = self.model_input[self.model_input.columns[~self.model_input.columns.isin(['id'])]]
+        xList = []
+
+        for i in self.names:
+            if not i == 'landslide_ids':
+                if self.model_inputs[i].dtype == 'categorical':
+                    xList.append(pd.get_dummies(self.x[i],
+                                                prefix = i[:4],
+                                                prefix_sep = '_'))
+                    predummy = predummy.drop([i], axis=1)
+
+        self.x = pd.concat(xList.append(predummy))
         self.y = self.model_input.id
 
         print(

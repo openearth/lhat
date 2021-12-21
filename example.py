@@ -81,7 +81,6 @@ project = io.inputs(
 # model.
 x, y = project.generate_xy()
 
-# pd.get_dummies() before passing on to project.run_model
 x = x.drop(columns=['landslide_ids'])
 
 # As an example
