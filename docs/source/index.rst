@@ -7,10 +7,9 @@
 Welcome to LHAT's documentation!
 ********************************
 
-Landslide Hazard Assessment Tool (LHAT) is a rapid assessment tool for landslide hazards around the world.
-
-This online documentation describes the tool, installation and its usage to
-derive landslide susceptibility maps.
+Landslide Hazard Assessment Tool (LHAT) is a rapid assessment tool for landslide
+hazards around the world. This online documentation describes the tool,
+installation and its usage to derive landslide susceptibility maps.
 
 .. toctree::
   :maxdepth: 2
@@ -19,6 +18,7 @@ derive landslide susceptibility maps.
   introduction
   setup
   lhat
+  improvements
 
 
 Contact

@@ -22,6 +22,7 @@ Once the environment is created, activate it and import lhat. Ensure your workin
 directory is the same root folder of the cloned repository.
 
 Activate the conda environment
+
 .. code-block:: text
 
       >> conda activate lhat
@@ -102,8 +103,63 @@ kernel window around it, and the second consists of landslide classes, where
 
 .. literalinclude:: ../../example.py
         :language: python
-        :caption: Example of parameterising inputs
+        :caption: Generating inputs for model training
         :lines: 79-82
         :linenos:
 
-If the data is categorical, you will need to call `pd.get_dummies`
+During the parameterisation stage, the dtype of each input dataset was necessary
+to declare. When the input data has a numerical data type (eg. elevation data),
+no additional data treatment is needed other than masking. If the data is
+categorical, however, a dummy variable needs to be generated for each category
+in the form of a binary variable (0s and 1s). By defining the data types in the
+parameterisation stage, dummy variables will be automatically created with
+the input data name as a prefix, followed by the category value.
+
+`generate_xy()` is a separate step specifically created to allow further refinement
+from the user. If the user is satisfied with the input data for training the model,
+the user can directly drop the landslide ID columns and proceed to running the
+model.
+
+:: literalinclude:: ../../example.py
+        :language: python
+        :caption: Dropping landslide ID and preparing for model training
+        :lines: 84
+        :linenos:
+
+
+Running the model(s)
+====================
+
+Running the model requires defining the model choice. In the LHAT tool, the user
+can choose from three different machine learning methods:
+* Support Vector Machine
+* Random Forest
+* Logistic Regression
+
+For each of the models, model parameterisation is performed automatically using
+GridSearch module. In LHAT, each model is parameterised according to the
+combination of parameters that produce the highest accuracy. In future developments,
+we would like to refine the model such that the model parameterisation is
+performed base on another criteria, as ranking on accuracy may run the risk of
+overtraining the model. Within the `lhat.Model` module, the input data is
+split according to 80% training and 20% test set.
+
+An example of running (all) models is shown in `example.py`
+
+:: literalinclude:: ../../example.py
+        :language: python
+        :caption: Example of how to run the machine learning model
+        :lines: 86-93
+        :linenos:
+
+
+Although LHAT is capable of rapid risk assessments, model runtimes can vary
+depending on several factors:
+* The bounding box of the area
+* The resolution of the pixel size
+* The amount of input datasets
+
+Once the modelling is complete, the results are exported as GeoTIFF files in the
+'Output' folder of the project (within 'Projects'). The random state defined
+in the tool allows for reproducability of the results, should somebody like to
+replicate the modelling. 

@@ -40,7 +40,9 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Setting up</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#parameterising-lhat">Parameterising LHAT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#array-harmonisation">Array harmonisation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#data-engineering-step">Data engineering step</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#running-the-model-s">Running the model(s)</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="lhat.html">LHAT Accessors, Methods and Objects</a></li>
@@ -84,21 +86,18 @@
 </div>
 <p>Once the environment is created, activate it and import lhat. Ensure your working
 directory is the same root folder of the cloned repository.</p>
-<p>Activate the conda environment
-.. code-block:: text</p>
-<blockquote>
-<div><p>&gt;&gt; conda activate lhat</p>
-</div></blockquote>
-<p>Import LHAT as so
-.. code-block:: python</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">lhat</span>
+<p>Activate the conda environment</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&gt;&gt; conda activate lhat
 </pre></div>
 </div>
-<p>Run the example script in your command line
-.. code-block:: text</p>
-<blockquote>
-<div><p>&gt;&gt; python example.py</p>
-</div></blockquote>
+<p>Import LHAT as so below:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">lhat</span>
+</pre></div>
+</div>
+<p>Run the example script in your command line</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&gt;&gt; python example.py
+</pre></div>
+</div>
 </div>
 <div class="section" id="parameterising-lhat">
 <h2>Parameterising LHAT<a class="headerlink" href="#parameterising-lhat" title="Permalink to this headline">¶</a></h2>
@@ -119,7 +118,7 @@ a landslide does not occur as locally as a point but as an area affected.</p>
 the ‘online’ option will return nothing.</p>
 </div>
 <p>The following code snippet can be used for the initial parameterisation, also
-available in example.py that is placed in the root of the lhat repository.</p>
+available in <cite>example.py</cite> that is placed in the root of the lhat repository.</p>
 <div class="literal-block-wrapper docutils container" id="id1">
 <div class="code-block-caption"><span class="caption-text">Example of parameterising inputs</span><a class="headerlink" href="#id1" title="Permalink to this code">¶</a></div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">lhat</span> <span class="kn">import</span> <span class="n">IO</span> <span class="k">as</span> <span class="n">io</span>
@@ -193,8 +192,110 @@ available in example.py that is placed in the root of the lhat repository.</p>
 </div>
 </div>
 </div>
+<div class="section" id="array-harmonisation">
+<h2>Array harmonisation<a class="headerlink" href="#array-harmonisation" title="Permalink to this headline">¶</a></h2>
+<p>Once the inputs have been defined, the tool harmonises all the input datasets
+into a stack of arrays by reprojecting and resampling them into the same grid
+size. The resampling is performed using nearest neighbour, and all datasets are
+reprojected into the crs defined in <cite>project.io.inputs()</cite>. Subsequently, any
+pixel from any input dataset that has no data becomes masked for the entire
+stack of arrays, leading to a final output consisting of an array where all valid
+data exists across all input datasets.</p>
+</div>
 <div class="section" id="data-engineering-step">
 <h2>Data engineering step<a class="headerlink" href="#data-engineering-step" title="Permalink to this headline">¶</a></h2>
+<p>Once the valid set of arrays are generated, the pixels that intersect with the
+landslide points are selected, as well as a 3x3 kernel window around the pixel.
+These points are marked as landslides areas, and are then selected across the
+arrays and flattened into a single dimension (for each type of input dataset).
+For the same number of landslide points, the same number of non-landslide points
+are then randomly selected in the stack of arrays and subsequently flattened as
+well. The flattened data, in the form of a <cite>pandas.DataFrame</cite> object, serves as
+input for the next steps, i.e. machine learning. Using the <cite>generate_xy()</cite>
+method, two dataframes are exported: the first consists of the flattened pixel
+values from each input dataset that coincide with the landslide point and the
+kernel window around it, and the second consists of landslide classes, where
+0 indicates no landslide and 1 indicates landslide.</p>
+<div class="literal-block-wrapper docutils container" id="id2">
+<div class="code-block-caption"><span class="caption-text">Generating inputs for model training</span><a class="headerlink" href="#id2" title="Permalink to this code">¶</a></div>
+<div class="highlight-python notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">######   Data Engineering Stage   ######</span>
+<span class="c1"># The user has a choice to further refine the input data prior to running the</span>
+<span class="c1"># model.</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">project</span><span class="o">.</span><span class="n">generate_xy</span><span class="p">()</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<p>During the parameterisation stage, the dtype of each input dataset was necessary
+to declare. When the input data has a numerical data type (eg. elevation data),
+no additional data treatment is needed other than masking. If the data is
+categorical, however, a dummy variable needs to be generated for each category
+in the form of a binary variable (0s and 1s). By defining the data types in the
+parameterisation stage, dummy variables will be automatically created with
+the input data name as a prefix, followed by the category value.</p>
+<p><cite>generate_xy()</cite> is a separate step specifically created to allow further refinement
+from the user. If the user is satisfied with the input data for training the model,
+the user can directly drop the landslide ID columns and proceed to running the
+model.</p>
+<dl class="simple">
+<dt>:: literalinclude:: ../../example.py</dt><dd><dl class="field-list simple">
+<dt class="field-odd">language</dt>
+<dd class="field-odd"><p>python</p>
+</dd>
+<dt class="field-even">caption</dt>
+<dd class="field-even"><p>Dropping landslide ID and preparing for model training</p>
+</dd>
+<dt class="field-odd">lines</dt>
+<dd class="field-odd"><p>84</p>
+</dd>
+<dt class="field-even">linenos</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+</dd>
+</dl>
+</div>
+<div class="section" id="running-the-model-s">
+<h2>Running the model(s)<a class="headerlink" href="#running-the-model-s" title="Permalink to this headline">¶</a></h2>
+<p>Running the model requires defining the model choice. In the LHAT tool, the user
+can choose from three different machine learning methods:
+* Support Vector Machine
+* Random Forest
+* Logistic Regression</p>
+<p>For each of the models, model parameterisation is performed automatically using
+GridSearch module. In LHAT, each model is parameterised according to the
+combination of parameters that produce the highest accuracy. In future developments,
+we would like to refine the model such that the model parameterisation is
+performed base on another criteria, as ranking on accuracy may run the risk of
+overtraining the model. Within the <cite>lhat.Model</cite> module, the input data is
+split according to 80% training and 20% test set.</p>
+<p>An example of running (all) models is shown in <cite>example.py</cite></p>
+<dl class="simple">
+<dt>:: literalinclude:: ../../example.py</dt><dd><dl class="field-list simple">
+<dt class="field-odd">language</dt>
+<dd class="field-odd"><p>python</p>
+</dd>
+<dt class="field-even">caption</dt>
+<dd class="field-even"><p>Example of how to run the machine learning model</p>
+</dd>
+<dt class="field-odd">lines</dt>
+<dd class="field-odd"><p>86-93</p>
+</dd>
+<dt class="field-even">linenos</dt>
+<dd class="field-even"><p></p></dd>
+</dl>
+</dd>
+</dl>
+<p>Although LHAT is capable of rapid risk assessments, model runtimes can vary
+depending on several factors:
+* The bounding box of the area
+* The resolution of the pixel size
+* The amount of input datasets</p>
+<p>Once the modelling is complete, the results are exported as GeoTIFF files in the
+‘Output’ folder of the project (within ‘Projects’). The random state defined
+in the tool allows for reproducability of the results, should somebody like to
+replicate the modelling.</p>
 </div>
 </div>
 
