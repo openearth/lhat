@@ -28,9 +28,9 @@ precipitation data, inferometric Synthetic Aperture Radar (InSAR) maps, etc..
    :maxdepth: 2
    :caption: Contents:
 
-setup
-lhat
-modules
+    setup
+    lhat
+    modules
 
 
 Contact
