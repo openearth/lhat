@@ -14,7 +14,17 @@ import joblib
 
 
 class MachineLearning:
+    '''
+    Module contains routines required to run machine learning model and parameterise
+    according to best generated accuracy scores. The model determines, based on its input
+    data, the probability of a landslide occurring in a pixel.
 
+    :param path: path to the saved model
+    :param model_name: 'SVM', 'RF', 'LR'
+    :param saveModel: True or False
+    
+    :return:
+    '''
     def __init__(self, X, y, pathToSavedModel, model_name = 'SVM', modelExist = False):
 
         '''
