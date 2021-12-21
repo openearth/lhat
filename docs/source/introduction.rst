@@ -29,7 +29,8 @@ this manner allows its inputs to remain flexible, and enables inter-operability
 between other risk assessment tool (such as Delft-FIAT, RA2CE, Ri2de or Criticality
 tool).
 
-LHAT has been tested on private datasets from various regions and of varying size.
+LHAT has been tested on areas within Bangladesh and Jamaica thus far, with accuracies
+of more than 80%.
 
 
 When should I use LHAT?
@@ -39,6 +40,13 @@ A main requirement of the LHAT tool is the need for historical occurrences of
 landslides in an area (in the form of coordinates). The sufficiency and
 representation of the landslide data, both in time and space, is a main
 determining factor on the accuracy of the output susceptibility map.
+
+The final result of the LHAT tool is a map showing probabilities of landslide
+occurrences.
+
+.. figure:: images/results.png
+
+        Fig. 1: Example results from each of the models
 
 
 How do I get started?

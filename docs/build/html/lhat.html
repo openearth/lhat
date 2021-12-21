@@ -83,8 +83,7 @@
 <li><p><strong>name</strong> (<em>str</em>) – Name of input data. Eg. ‘road’, ‘dem’, ‘vegetation’, etc..</p></li>
 <li><p><strong>path</strong> – str
 Absolute or relative path to where the input data is located</p></li>
-<li><p><strong>dtype</strong> – str (‘numerical’ or ‘categorical’)
-The data type is important to define as categorical and numerical datasets
+<li><p><strong>dtype</strong> (<em>str</em><em> (</em><em>'numerical'</em><em> or </em><em>'categorical'</em><em>)</em>) – The data type is important to define as categorical and numerical datasets
 are treated differently in the IO module.</p></li>
 </ul>
 </dd>
@@ -107,35 +106,26 @@ the project folder.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>project_name</strong> – str
-Name of project eg. ‘Jamaica’</p></li>
-<li><p><strong>crs</strong> – str
-CRS to reproject all input data to and for model result</p></li>
-<li><p><strong>landslide_points</strong> – str
-Path to landslide points file (takes geoJSON or shapefile)</p></li>
-<li><p><strong>bbox</strong> – list
-Bounding box. Required for downloading or clipping online datasets.
+<li><p><strong>project_name</strong> (<em>str</em>) – Name of project eg. ‘Jamaica’</p></li>
+<li><p><strong>crs</strong> (<em>str</em>) – CRS to reproject all input data to and for model result</p></li>
+<li><p><strong>landslide_points</strong> (<em>str</em>) – Path to landslide points file (takes geoJSON or shapefile)</p></li>
+<li><p><strong>bbox</strong> (<em>list</em>) – Bounding box. Required for downloading or clipping online datasets.
 Takes in a list of coordinates in WGS84, or a shapefile, or a geoJSON.
 Example: [[x1,y1], [x1,y2], [x2,y2], [x2,y1], [x1,y1]]</p></li>
-<li><p><strong>random_state</strong> – int
-Takes an int of any value to determine a (reproducible) state of randomness.
+<li><p><strong>random_state</strong> (<em>int</em>) – Takes an int of any value to determine a (reproducible) state of randomness.
 Determining the random state allows for results to be replicated if needed.</p></li>
-<li><p><strong>inputs</strong> – dict
-Dictionary of input data pointing to paths or decision to include
+<li><p><strong>inputs</strong> (<em>dict</em>) – Dictionary of input data pointing to paths or decision to include
 it in the model. An example of how to define inputs is provided
-in <code class="docutils literal notranslate"><span class="pre">example.py</span></code>.</p></li>
-<li><p><strong>no_data</strong> – list
-list of potential no_data values. Preferably, you should define
+in <cite>example.py</cite>.</p></li>
+<li><p><strong>no_data</strong> (<em>list</em>) – list of potential no_data values. Preferably, you should define
 a constant no_data value for all your input datasets, so that valid
 data will NOT be accidentally masked out. No warranty is provided
 for erroneous results if any no data values are a valid value in
 another dataset.</p></li>
-<li><p><strong>pixel_size</strong> – int
-Resolution of pixel size. WARNING - pixel size is only relevant
+<li><p><strong>pixel_size</strong> (<em>int</em>) – Resolution of pixel size. WARNING - pixel size is only relevant
 for datasets obtained online. The pixel size will therefore
 dictate the resolution that the (relevant) input data will be in.</p></li>
-<li><p><strong>kernel_size</strong> – int = 3
-To account for potential uncertainty in landslide-striken areas,
+<li><p><strong>kernel_size</strong> (<em>int = 3</em>) – To account for potential uncertainty in landslide-striken areas,
 a default [3 x 3] window of pixels around landslide points
 is classed as ‘landslide’. The user can define a larger kernel size
 of ODD numbers eg. 3, 5, 7, 9 etc, depending on the resolution
