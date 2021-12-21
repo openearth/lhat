@@ -33,12 +33,11 @@ class inputData:
         are treated differently in the IO module.
 
 
-    Returns
-    --------
-
-    returns: :class:`inputData`:
-        An object containing attributes of input data including name, filepath
+    :return:
+        An `inputData` object containing attributes of input data including name, filepath
         and data type
+
+    :rtype: `inputData` object
     '''
     def __init__(self, name, path, dtype):
         self.name = name
@@ -95,12 +94,12 @@ class inputs:
         of ODD numbers eg. 3, 5, 7, 9 etc, depending on the resolution
         of their input datasets.
 
-    Returns
-    -------
-    `pandas.DataFrame`:
+    :return:
         Object is returned containing columns of input data as defined by
         the user [x] as well as another pandas.DataFrame object of classes.
         Each row represents a pixel index in the stack of input datasets.
+
+    :rtype: `pandas.DataFrame`
 
     '''
 
@@ -388,9 +387,10 @@ class inputs:
          Generates list of valid arrays. A mask is made of only valid arrays
          across stack of arrays.
 
-         Returns
-         --------
-         :return A harmonised stack of arrays where all valid data exists per pixel
+         :return:
+            A harmonised stack of arrays where all valid data exists per pixel
+         :rtype: `numpy.ndarray`
+
          '''
          self.arrays = []
          self.names = []
@@ -438,7 +438,10 @@ class inputs:
 
          Returns
          --------
-         :return Dataframe of x/y coordinates for all pixels within kernel window
+         :return:
+            Dataframe of x/y coordinates for all pixels within kernel window
+            
+         :rtype: `pandas.dataframe`
          '''
 
          dd = rasterio.open(self.reference.path, lock = False)
