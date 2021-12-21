@@ -1,3 +1,5 @@
+.. _index:
+
 .. lsm documentation master file, created by
    sphinx-quickstart on Tue Nov 30 09:23:14 2021.
 
@@ -10,27 +12,13 @@ Landslide Hazard Assessment Tool (LHAT) is a rapid assessment tool for landslide
 This online documentation describes the tool, installation and its usage to
 derive landslide susceptibility maps.
 
-
-What is LHAT?
-=============
-
-LHAT is a GIS-based tool for data-driven forecasting of landslide susceptibilities.
-LHAT relies on globally and publicly available data sources as input for the data
-model. The user can choose between three machine learning models: Support Vector,
-Logistic Regression and Random Forest. These models are auto-parameterised using
-GridSearch and scored based on accuracy. Currently, the data inputs are considered
-static. LHAT has the option to be integrated into a forecasting framework for
-Early Warning Systems, and can receive dynamic and near real-time inputs such as
-precipitation data, inferometric Synthetic Aperture Radar (InSAR) maps, etc..
-
-
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+  :maxdepth: 2
+  :caption: Contents:
 
-    setup
-    lhat
-    modules
+  introduction
+  setup
+  lhat
 
 
 Contact

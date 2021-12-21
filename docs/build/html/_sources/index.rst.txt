@@ -1,3 +1,5 @@
+.. _index:
+
 .. lsm documentation master file, created by
    sphinx-quickstart on Tue Nov 30 09:23:14 2021.
 
@@ -7,47 +9,24 @@ Welcome to LHAT's documentation!
 
 Landslide Hazard Assessment Tool (LHAT) is a rapid assessment tool for landslide hazards around the world.
 
-This online documentation describes the tool, its usage and the model choices that can be used to derive landslide susceptibility maps.
-For further enquiries, please approach the following developers: Giorgio Santinelli (giorgio.santinelli@deltares.nl) and Robyn Gwee (robyn.gwee@deltares.nl)
-
-
-Installing LHAT
-===============
-
-Clone the LHAT repository locally from https://github.com/openearth/lhat
-
-.. code-block:: text
-
-      >> git clone https://github.com/openearth/lhat.git
-
-Navigate to the directory where you cloned the repository and create a conda environment from the yml file.
-
-.. code-block:: text
-
-      >> conda env create -f environment.yml
-
-An example file has been made to showcase how LHAT can be parameterised and run. See: example.py
-Or alternatively, run the script as follows:
-
-.. code-block:: text
-
-      >> python example.py
-
-
-
-.. automodule:: lhat
-    :imported-members:
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+This online documentation describes the tool, installation and its usage to
+derive landslide susceptibility maps.
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+  :maxdepth: 2
+  :caption: Contents:
 
-   modules
+  introduction
+  setup
+  lhat
 
+
+Contact
+=======
+For further enquiries, please approach the following developers: Giorgio Santinelli
+(giorgio.santinelli@deltares.nl) and Robyn Gwee (robyn.gwee@deltares.nl). LHAT
+has been developed with support from the Deltares Natural Hazards Strategic
+Research Program.
 
 
 Indices and tables

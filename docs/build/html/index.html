@@ -15,7 +15,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="lhat" href="modules.html" /> 
+    <link rel="next" title="Landslide Hazard Assessment Tool" href="introduction.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -35,7 +35,9 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">lhat</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Landslide Hazard Assessment Tool</a></li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Setting up</a></li>
+<li class="toctree-l1"><a class="reference internal" href="lhat.html">LHAT Accessors, Methods and Objects</a></li>
 </ul>
 
         </div>
@@ -62,47 +64,39 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <div class="section" id="welcome-to-lhat-s-documentation">
+  <span class="target" id="index"></span><div class="section" id="welcome-to-lhat-s-documentation">
 <h1>Welcome to LHAT’s documentation!<a class="headerlink" href="#welcome-to-lhat-s-documentation" title="Permalink to this headline">¶</a></h1>
 <p>Landslide Hazard Assessment Tool (LHAT) is a rapid assessment tool for landslide hazards around the world.</p>
-<p>This online documentation describes the tool, its usage and the model choices that can be used to derive landslide susceptibility maps.
-For further enquiries, please approach the following developers: Giorgio Santinelli (<a class="reference external" href="mailto:giorgio&#46;santinelli&#37;&#52;&#48;deltares&#46;nl">giorgio<span>&#46;</span>santinelli<span>&#64;</span>deltares<span>&#46;</span>nl</a>) and Robyn Gwee (<a class="reference external" href="mailto:robyn&#46;gwee&#37;&#52;&#48;deltares&#46;nl">robyn<span>&#46;</span>gwee<span>&#64;</span>deltares<span>&#46;</span>nl</a>)</p>
-<div class="section" id="installing-lhat">
-<h2>Installing LHAT<a class="headerlink" href="#installing-lhat" title="Permalink to this headline">¶</a></h2>
-<p>Clone the LHAT repository locally from <a class="reference external" href="https://github.com/openearth/lhat">https://github.com/openearth/lhat</a></p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&gt;&gt; git clone https://github.com/openearth/lhat.git
-</pre></div>
-</div>
-<p>Navigate to the directory where you cloned the repository and create a conda environment from the yml file.</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&gt;&gt; conda env create -f environment.yml
-</pre></div>
-</div>
-<p>An example file has been made to showcase how LHAT can be parameterised and run. See: example.py
-Or alternatively, run the script as follows:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>&gt;&gt; python example.py
-</pre></div>
-</div>
-<span class="target" id="module-lhat"></span><p>Landslide Hazard Assessment Tool (LHAT)
-Copyright (C) 2021 Robyn Gwee, Giorgio Santinelli,</p>
-<p>This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.</p>
-<p>This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.</p>
-<p>You should have received a copy of the GNU General Public License
-along with this program.  If not, see &lt;<a class="reference external" href="https://www.gnu.org/licenses/">https://www.gnu.org/licenses/</a>&gt;.</p>
+<p>This online documentation describes the tool, installation and its usage to
+derive landslide susceptibility maps.</p>
 <div class="toctree-wrapper compound">
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="modules.html">lhat</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="lhat.html">lhat package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Landslide Hazard Assessment Tool</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#what-is-lhat">What is LHAT?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#why-use-lhat">Why use LHAT?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#when-should-i-use-lhat">When should I use LHAT?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="introduction.html#how-do-i-get-started">How do I get started?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="setup.html">Setting up</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="setup.html#using-lhat">Using LHAT</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="lhat.html">LHAT Accessors, Methods and Objects</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="lhat.html#module-lhat.IO">lhat.IO: Data operations on input and output data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="lhat.html#module-lhat.Model">lhat.Model: Model parameterisation and grid search</a></li>
 </ul>
 </li>
 </ul>
 </div>
+<div class="section" id="contact">
+<h2>Contact<a class="headerlink" href="#contact" title="Permalink to this headline">¶</a></h2>
+<p>For further enquiries, please approach the following developers: Giorgio Santinelli
+(<a class="reference external" href="mailto:giorgio&#46;santinelli&#37;&#52;&#48;deltares&#46;nl">giorgio<span>&#46;</span>santinelli<span>&#64;</span>deltares<span>&#46;</span>nl</a>) and Robyn Gwee (<a class="reference external" href="mailto:robyn&#46;gwee&#37;&#52;&#48;deltares&#46;nl">robyn<span>&#46;</span>gwee<span>&#64;</span>deltares<span>&#46;</span>nl</a>). LHAT
+has been developed with support from the Deltares Natural Hazards Strategic
+Research Program.</p>
 </div>
 <div class="section" id="indices-and-tables">
 <h2>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h2>
@@ -118,7 +112,7 @@ along with this program.  If not, see &lt;<a class="reference external" href="ht
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="modules.html" class="btn btn-neutral float-right" title="lhat" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="introduction.html" class="btn btn-neutral float-right" title="Landslide Hazard Assessment Tool" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
