@@ -19,12 +19,8 @@ from osgeo import gdal, ogr, osr
 class inputData:
     '''Instance of individual input data containing their name, file path and data type.
 
-    Parameters
-    ----------
-
-    :param name: str
-        Name of input data. Eg. 'road', 'dem', 'vegetation', etc..
-
+    :param name: Name of input data. Eg. 'road', 'dem', 'vegetation', etc..
+    :type name: str
     :param path: str
         Absolute or relative path to where the input data is located
 
@@ -387,8 +383,7 @@ class inputs:
          Generates list of valid arrays. A mask is made of only valid arrays
          across stack of arrays.
 
-         :return:
-            A harmonised stack of arrays where all valid data exists per pixel
+         :return: A harmonised stack of arrays where all valid data exists per pixel
          :rtype: `numpy.ndarray`
 
          '''
@@ -428,10 +423,8 @@ class inputs:
          Using landslide coordinates, takes a kernel (of default size 3) and
          generates a dataframe of x/y coordinates for all pixels within the kernel
 
-         Parameters
-         -----------
-         :param x: float
-            Longitudinal coordinate
+         :param x: Longitudinal coordinate
+         :type x: float
 
          :param y: float
             Latitudinal coordinate
@@ -440,7 +433,7 @@ class inputs:
          --------
          :return:
             Dataframe of x/y coordinates for all pixels within kernel window
-            
+
          :rtype: `pandas.dataframe`
          '''
 
