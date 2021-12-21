@@ -22,17 +22,9 @@ class MachineLearning:
     :param path: path to the saved model
     :param model_name: 'SVM', 'RF', 'LR'
     :param saveModel: True or False
-    
-    :return:
     '''
     def __init__(self, X, y, pathToSavedModel, model_name = 'SVM', modelExist = False):
 
-        '''
-        :param path: path to the saved model
-        :param model_name: 'SVM', 'RF', 'LR'
-        :param saveModel: True or False
-        :return:
-        '''
         saveModel = False
         if modelExist==False:
             saveModel = True
@@ -135,8 +127,6 @@ class MachineLearning:
             Actual landslide class (1 = landslide; 0 = no landslide) to compare with
             predicted class.
 
-        Returns
-        --------
         :return:
             Prints accuracy score and confusion matrix
         '''
@@ -225,10 +215,8 @@ class MachineLearning:
 
         """Apply class probability prediction of a scikit learn model to a RasterStack.
 
-        Parameters
-        ----------
-        estimator : estimator object implementing 'fit'
-            The object to use to fit the data.
+        :param estimator:
+            Estimator object implementing 'fit'. The object is used to fit the data.
         """
 
         n_classes = 2 # binary classification
@@ -258,21 +246,17 @@ class MachineLearning:
 
         """Class probabilities function.
 
-        Parameters
-        ----------
-        img : tuple (window, numpy.ndarray)
-            A window object, and a 3d ndarray of raster data with the dimensions in
+        :param img: A window object, and a 3d ndarray of raster data with the dimensions in
             order of (band, rows, columns).
+        :type img: tuple (window, numpy.ndarray)
 
-        estimator : estimator object implementing 'fit'
-            The object to use to fit the data.
+        :param estimator: The object to use to fit the data.
+        :type estimator: Estimator object implementing the 'fit'
 
-        Returns
-        -------
-        numpy.ndarray
-            Multi band raster as a 3d numpy array containing the probabilities
-            associated with each class. ndarray dimensions are in the order of
-            (class, row, column).
+        :return: Multi-band raster as a 3d numpy array containing the probabilities
+            associated with each class. ndarray dimensions are in the order of (class,
+            row, column).
+        :rtype: numpy.ndarray
         """
 
         # reshape each image block matrix into a 2D matrix

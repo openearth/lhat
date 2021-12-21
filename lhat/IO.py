@@ -44,10 +44,6 @@ class inputs:
     '''The inputs class initialises a project and saves all relevant data within
     the project folder.
 
-
-    Parameters
-    ----------
-
     :param project_name: str
         Name of project eg. 'Jamaica'
 
@@ -429,8 +425,6 @@ class inputs:
          :param y: float
             Latitudinal coordinate
 
-         Returns
-         --------
          :return:
             Dataframe of x/y coordinates for all pixels within kernel window
 
@@ -456,9 +450,8 @@ class inputs:
         Takes the landslide points and selects pixels that overlap with the landslide points
         as well as the matrix area around it. Kernel is definable by user when initiating project.
 
-        Returns
-        --------
-        Dataframe of (flattened) raster values in those indexes
+        :return: Dataframe of (flattened) raster values in those indexes
+        :rtype: `pandas.DataFrame`
         '''
         self.valid_arrays()
 
@@ -541,9 +534,6 @@ class inputs:
         Runs the machine learning model based on model choice, input data (x) and
         class assigned to each pixel (y: landslide or not).
 
-        Parameters
-        -----------
-
         :param model: str (default: 'SVM')
             Choose a machine learning model to run. Choices include: Support Vector Machine 'SVM',
             Random Forest 'RF' or Logistic Regression 'LR'.
@@ -555,9 +545,7 @@ class inputs:
             pandas.dataframe containing classes assigned to each row of input data.
             0 = no landslide; 1 = landslide
 
-        Returns
-        --------
-        Landslide susceptibility map in GeoTIFF format, available in output folder
+        :return: Landslide susceptibility map in GeoTIFF format, available in output folder
         '''
         self.model = model
 
@@ -583,12 +571,11 @@ class inputs:
         Converts a vector shapefile into a raster, taking the reference dataset's
         grid size.
 
-        :param vectorpath: str
-            Place filepath to vector layer to rasterize
+        :param vectorpath: File path of vector layer to rasterize
+        :type vectorpath: str
 
-        Returns
-        --------
-        A rasterized vector file in GeoTIFF format
+        :return: A rasterized vector file in GeoTIFF format
+        :rtype: GeoTIFF
         '''
         # open shapefile, get layer and get extent
         ds = ogr.Open(vectorpath)
@@ -627,7 +614,6 @@ class inputs:
         :param rastervec: str
             Path to the rasterized vector file
 
-        Returns
         '''
 
         # open rasterized file and get information

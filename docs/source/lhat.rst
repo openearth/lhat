@@ -1,5 +1,7 @@
-lhat package
-============
+.. _lhat-description:
+
+LHAT Accessors, Methods and Objects
+===================================
 
 lhat.IO: Data operations on input and output data
 -------------------------------------------------
