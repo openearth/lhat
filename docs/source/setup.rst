@@ -82,3 +82,28 @@ reprojected into the crs defined in `project.io.inputs()`. Subsequently, any
 pixel from any input dataset that has no data becomes masked for the entire
 stack of arrays, leading to a final output consisting of an array where all valid
 data exists across all input datasets.
+
+
+Data engineering step
+======================
+
+Once the valid set of arrays are generated, the pixels that intersect with the
+landslide points are selected, as well as a 3x3 kernel window around the pixel.
+These points are marked as landslides areas, and are then selected across the
+arrays and flattened into a single dimension (for each type of input dataset).
+For the same number of landslide points, the same number of non-landslide points
+are then randomly selected in the stack of arrays and subsequently flattened as
+well. The flattened data, in the form of a `pandas.DataFrame` object, serves as
+input for the next steps, i.e. machine learning. Using the `generate_xy()`
+method, two dataframes are exported: the first consists of the flattened pixel
+values from each input dataset that coincide with the landslide point and the
+kernel window around it, and the second consists of landslide classes, where
+0 indicates no landslide and 1 indicates landslide.
+
+.. literalinclude:: ../../example.py
+        :language: python
+        :caption: Example of parameterising inputs
+        :lines: 79-82
+        :linenos:
+
+If the data is categorical, you will need to call `pd.get_dummies`
