@@ -48,14 +48,23 @@ Parameterising LHAT
 ===================
 
 The LHAT tool requires some parameters. The following arguments are necessary:
+
 * Name of project
+
 * Coordinate Referencing System (crs)
+
 * Path to where your landslide point dataset is (accepts JSON or .shp format)
+
 * A random state (necessary for reproducability of data)
+
 * Bounding box for clipping public assets
+
 * inputs (dictionary)
+
 * no_data values (can be a list or single value)
+
 * Pixel resolution (important for the retrieval of online datasets)
+
 * Kernel size (default 3x3): necessary for defining an area as 'landslide', since
 a landslide does not occur as locally as a point but as an area affected.
 
@@ -132,8 +141,11 @@ Running the model(s)
 
 Running the model requires defining the model choice. In the LHAT tool, the user
 can choose from three different machine learning methods:
+
 * Support Vector Machine
+
 * Random Forest
+
 * Logistic Regression
 
 For each of the models, model parameterisation is performed automatically using
@@ -155,8 +167,11 @@ An example of running (all) models is shown in `example.py`.
 
 Although LHAT is capable of rapid risk assessments, model runtimes can vary
 depending on several factors:
+
 * The bounding box of the area
+
 * The resolution of the pixel size
+
 * The amount of input datasets
 
 Once the modelling is complete, the results are exported as GeoTIFF files in the
