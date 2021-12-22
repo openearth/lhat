@@ -120,7 +120,7 @@ from the user. If the user is satisfied with the input data for training the mod
 the user can directly drop the landslide ID columns and proceed to running the
 model.
 
-:: literalinclude:: ../../example.py
+.. literalinclude:: ../../example.py
         :language: python
         :caption: Dropping landslide ID and preparing for model training
         :lines: 84
@@ -144,9 +144,9 @@ performed base on another criteria, as ranking on accuracy may run the risk of
 overtraining the model. Within the `lhat.Model` module, the input data is
 split according to 80% training and 20% test set.
 
-An example of running (all) models is shown in `example.py`
+An example of running (all) models is shown in `example.py`.
 
-:: literalinclude:: ../../example.py
+.. literalinclude:: ../../example.py
         :language: python
         :caption: Example of how to run the machine learning model
         :lines: 86-93
@@ -162,4 +162,4 @@ depending on several factors:
 Once the modelling is complete, the results are exported as GeoTIFF files in the
 'Output' folder of the project (within 'Projects'). The random state defined
 in the tool allows for reproducability of the results, should somebody like to
-replicate the modelling. 
+replicate the modelling.
