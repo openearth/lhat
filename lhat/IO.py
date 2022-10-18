@@ -14,7 +14,7 @@ from osgeo import gdal, ogr, osr
 # check that you have an Earth Engine account AND
 # that you entered the authentication code correctly.
 
-#ee.Initialize()
+ee.Initialize()
 
 class inputData:
     '''Instance of individual input data containing their name, file path and data type.
@@ -123,6 +123,8 @@ class inputs:
         if self.landslide_points.crs != self.crs: # Reprojects landslide points to intended crs
             self.landslide_points = self.landslide_points.to_crs(crs = self.crs)
 
+        # assigning random state
+        self.random_state = random_state
 
         # Bounding box checks
         assert bbox, 'Missing boundaries, please define a bounding box or input a shapefile/GJSON path'
@@ -145,10 +147,10 @@ class inputs:
             print(f'Downloading {param}...')
             inputs = {
                 'dem': ee.Image("USGS/SRTMGL1_003").select('elevation'),
-                #'slope': ee.Terrain.slope(ee.Image("USGS/SRTMGL1_003").select('elevation')),
-                #'aspect': ee.Terrain.aspect(ee.Image("USGS/SRTMGL1_003").select('elevation')),
+                'slope': ee.Terrain.slope(ee.Image("USGS/SRTMGL1_003").select('elevation')),
+                'aspect': ee.Terrain.aspect(ee.Image("USGS/SRTMGL1_003").select('elevation')),
                 #'tpi': ee.Image("CSP/ERGo/1_0/Global/SRTM_mTPI").select('elevation'),
-                #'landcover': ee.Image("COPERNICUS/Landcover/100m/Proba-V-C3/Global/2019").select('discrete_classification')
+                'landcover': ee.Image("COPERNICUS/Landcover/100m/Proba-V-C3/Global/2019").select('discrete_classification')
                 }
 
             bb_filter = inputs[param].clip(ee.Geometry.Polygon(bbox))
@@ -365,43 +367,57 @@ class inputs:
         print(inputs_message)
 
     def valid_arrays(self):
-         '''
-         Generates list of valid arrays. A mask is made of only valid arrays
-         across stack of arrays.
+        '''
+        Generates list of valid arrays. A mask is made of only valid arrays
+        across stack of arrays.
 
-         :return: A harmonised stack of arrays where all valid data exists per pixel
-         :rtype: `numpy.ndarray`
+        :return: A harmonised stack of arrays where all valid data exists per pixel
+        :rtype: `numpy.ndarray`
+        '''
+        self.arrays = []
+        self.names = []
+        for k, v in self.model_inputs.items():
 
-         '''
-         self.arrays = []
-         self.names = []
+            # Dealing with categorical data for the array data
+            if v.dtype == 'categorical':
+                dd = rasterio.open(v.path, lock=False, mask=True)
+                # GeoTIFFs have a maximum of 4 bands, __.read(1) reads the 1st band number
+                dd_cats = dd.read(1).astype(np.float64)
+                # filter classes
+                arrays_classes = np.unique(dd_cats).tolist()
+                if self.no_data in arrays_classes:
+                    arrays_classes.remove(self.no_data)
+                for ac in arrays_classes:
+                    name_class = k[:4] + '_' + str(ac)
+                    dd_cat = np.copy(dd_cats)
+                    # fill array with 0 and 1
+                    dd_cat[np.where(dd_cat == ac)] = 1
+                    dd_cat[np.where(np.logical_and(dd_cat != 1, dd_cat != self.no_data))] = 0
+                    self.arrays.append(dd_cat)
+                    self.names.append(name_class)
+                dd.close()
 
-         for k, v in self.model_inputs.items():
+            elif v.dtype == 'numerical':
+                dd = rasterio.open(v.path, lock=False, mask=True)
+                # Append all arrays to list to create stack. Float32 not yet tested.
+                self.arrays.append(dd.read(1).astype(np.float64))
+                dd.close()
+                # Append all names of arrays into list of names. This can also  be
+                # accessed with project.model_inputs when running the tool.
+                self.names.append(k)
 
-             dd = rasterio.open(v.path, lock=False, mask = True)
+        # Filters no data values
+        self.arrays = np.where(np.isin(self.arrays, self.no_data), np.nan, self.arrays)
 
-             # GeoTIFFs have a maximum of 4 bands, __.read(1) reads the 1st band
-             # number
-
-             # Append all arrays to list to create stack. Float32 not yet tested.
-             self.arrays.append(dd.read(1).astype(np.float64))
-             dd.close()
-             # Append all names of arrays into list of names. This can also  be
-             # accessed with project.model_inputs when running the tool.
-             self.names.append(k)
-
-         # Filters no data values
-         self.arrays = np.where(np.isin(self.arrays, self.no_data), np.nan, self.arrays)
-
-         # Creates a mask over all nan values and subsequently tiles it to similar
-         # shape as raster stack.
-         mask = np.tile((~np.any(np.isnan(self.arrays),
+        #Creates a mask over all nan values and subsequently tiles it to similar
+        # shape as raster stack.
+        mask = np.tile((~np.any(np.isnan(self.arrays),
                                  axis=0) & np.any(self.arrays, axis=0)),
-                         (len(self.arrays),1,1))
+                                 (len(self.arrays),1,1))
 
-         self.arrays = np.where(mask, self.arrays, np.nan)
+        self.arrays = np.where(mask, self.arrays, np.nan)
 
-         return
+        return
 
     def matrix_window(self,
                x, y, ID):
@@ -468,8 +484,10 @@ class inputs:
 
         # Assign True to points in the raster stack that are considered landslide points
         for i in iid:
-            bmask[i[0], i[1]] = True
-            idarray[i[0], i[1]] = i[2]
+            if i[0] >= 0 and i[0] < np.shape(bmask)[0] \
+                    and i[1] >= 0 and i[1] < np.shape(bmask)[1]: # take care of out-of-grid points produced by kernel
+                bmask[i[0], i[1]] = True
+                idarray[i[0], i[1]] = i[2]
 
         # Add the id array to stack of arrays
         self.arrays = np.append(self.arrays, [idarray], axis=0)
@@ -497,7 +515,8 @@ class inputs:
         nldf = nldf.drop(columns=['landslide_ids']).dropna()
 
         self.nonlandslide_pixels = nldf.sample(n = len(self.landslide_pixels.index),
-                                               random_sate = self.random_state)
+                                               random_state = self.random_state,
+                                               replace = True) # in case #ls > #nonls
         self.nonlandslide_pixels['id'] = 0
 
         self.model_input = pd.concat([self.landslide_pixels,
@@ -508,15 +527,21 @@ class inputs:
         predummy = self.model_input[self.model_input.columns[~self.model_input.columns.isin(['id'])]]
         xList = []
 
-        for i in self.names:
-            if not i == 'landslide_ids':
-                if self.model_inputs[i].dtype == 'categorical':
-                    xList.append(pd.get_dummies(self.x[i],
-                                                prefix = i[:4],
-                                                prefix_sep = '_'))
-                    predummy = predummy.drop([i], axis=1)
+        # # if the 2d arrays have been dummified, then the following is no more necessary.
+        # for i in self.names:
+        #     if not i == 'landslide_ids':
+        #         if self.model_inputs[i].dtype == 'categorical':
+        #             xList.append(pd.get_dummies(self.model_input[i],
+        #                                         prefix = i[:4],
+        #                                         prefix_sep = '_'))
+        #             predummy = predummy.drop([i], axis=1)
 
-        self.x = pd.concat(xList.append(predummy))
+        # instead, just get rid of the landslide column
+        predummy = predummy.drop('landslide_ids', axis=1)
+
+        #self.x = pd.concat(xList.append(predummy))
+        xList.append(predummy);
+        self.x = pd.concat(xList, axis=1)
         self.y = self.model_input.id
 
         print(
