@@ -41,7 +41,7 @@ landslides in an area (in the form of coordinates). The sufficiency and
 representation of the landslide data, both in time and space, is a main
 determining factor on the accuracy of the output susceptibility map.
 
-The final result of the LHAT tool is a map showing probabilities of landslide
+The final output of the LHAT tool is a raster with two bands; the first band displays the probability that a landslide will not occur, while the second band displays the probability that a landslide will occur. For a given pixel, the sum of band 1 and band 2 is 1. 
 occurrences.
 
 .. figure:: images/results.png
