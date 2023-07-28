@@ -158,7 +158,11 @@ class inputs:
             return getURL(bb_filter, param)
 
         def getGLIM():
-            wcs = WebCoverageService(r'https://deltaresdata.openearth.eu/geoserver/chw2/wcs?service=WCS',
+            # wcs = WebCoverageService(r'https://deltaresdata.openearth.eu/geoserver/chw2/wcs?service=WCS',
+            #                          version = '1.0.0')
+
+            wcs = WebCoverageService(r'https://coastalhazardwheel.avi.deltares.nl/'
+                                     r'geoserver/ows?service=WCS&version=1.0.0&request=GetCapabilities',
                                      version = '1.0.0')
 
             # Get min/max of lon/lat
@@ -167,7 +171,7 @@ class inputs:
 
             # convert to EPSG:3857 and round to nearest thousandth
             trx = Transformer.from_crs(crs_from = 'EPSG:4326',
-                                       crs_to = 'EPSG:3857',
+                                       crs_to = 'EPSG:4326',
                                        always_xy = True)
 
             # Reproject to EPSG:3857, and get floor/ceiling of nearest 1000th
@@ -181,10 +185,11 @@ class inputs:
             # bbox specific to GLIM's crs
             glimbbox = (minX, minY, maxX, maxY)
 
-            r = wcs.getCoverage(identifier = 'chw2:glim_raster',
+            r = wcs.getCoverage(identifier = 'chw2-vector:glim_rast',
                                 bbox = glimbbox, format='GeoTIFF',
-                                crs = 'urn:ogc:def:crs:EPSG::3857',
-                                resx=1000, resy=1000)
+                                crs = 'urn:ogc:def:crs:EPSG::4326',
+                                width=40, height=20)
+                                # resx=1000, resy=1000)
 
             with open(self.input_dir / 'glim.tif', 'wb') as f:
                 f.write(r.read())
@@ -309,7 +314,7 @@ class inputs:
 
             return
 
-        # valid_data = ['dem', 'slope', 'aspect', 'lithology', 'landcover']
+        valid_data = ['dem', 'slope', 'aspect', 'lithology', 'landcover']
 
         online_sources = {'dem': '''ee_load('dem')''',
                           'lithology': '''getGLIM()''',
