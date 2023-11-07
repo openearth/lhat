@@ -81,7 +81,7 @@ project = io.inputs(
 # model.
 x, y = project.generate_xy()
 
-x = x.drop(columns=['landslide_ids'])
+# x = x.drop(columns=['landslide_ids'])
 
 # As an example
 # for m in ['SVM', 'RF', 'LR']:
