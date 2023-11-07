@@ -84,10 +84,17 @@ x, y = project.generate_xy()
 x = x.drop(columns=['landslide_ids'])
 
 # As an example
-for m in ['SVM', 'RF', 'LR']:
-    project.run_model(
-        x = x,
-        y = y,
-        model = m,
-        modelExist = False
-        )
+# for m in ['SVM', 'RF', 'LR']:
+#     project.run_model(
+#         x = x,
+#         y = y,
+#         model = m,
+#         modelExist = False
+#         )
+
+project.run_model(
+    x = x,
+    y = y,
+    model = 'LR',
+    modelExist = False
+    )
