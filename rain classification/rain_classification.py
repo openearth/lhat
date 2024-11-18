@@ -82,8 +82,8 @@ if __name__ == "__main__":
     df = df[[col for col in df.columns if col not in ['intensity_non', 'duration_non']]]
 
 
-    # sns.scatterplot(data=df, x='logintensity', y='logduration', hue='occurence')
-    # plt.show()
+    sns.scatterplot(data=df, x='logintensity', y='logduration', hue='occurence')
+    plt.show()
 
     X = df[['logintensity', 'logduration']].values
     y = df['occurence'].values
