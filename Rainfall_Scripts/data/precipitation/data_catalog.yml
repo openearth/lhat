@@ -1,0 +1,24 @@
+meta:
+  root: c:\Users\gunaratn\OneDrive - Stichting Deltares\LHAT\2025\Scripts\data\precipitation
+era5_hourly:
+  data_type: RasterDataset
+  provider: zarr
+  path: era5_hourly/{variable}.nc
+  driver: netcdf
+  filesystem: local
+  meta:
+    category: meteo
+    notes: Extracted from Copernicus Climate Data Store
+    paper_doi: 10.1002/qj.3803
+    paper_ref: Hersbach et al. (2019)
+    source_license: https://cds.climate.copernicus.eu/cdsapp/#!/terms/licence-to-use-copernicus-products
+    source_url: https://doi.org/10.24381/cds.adbb2d47
+    source_temporal_extent:
+      start: '1950-01-01'
+      end: '2023-03-01'
+    source_spatial_extent:
+      West: -0.125
+      South: -90.125
+      East: 359.875
+      North: 90.125
+  crs: 4326
