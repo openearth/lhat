@@ -9,12 +9,14 @@ from pyproj import Transformer
 import pandas as pd
 from lhat import Model as md
 from osgeo import gdal, ogr, osr
+from jenkspy import JenksNaturalBreaks
+import matplotlib.pyplot as plt
 
 # Initialize earth engine. If this doesn't work,
 # check that you have an Earth Engine account AND
 # that you entered the authentication code correctly.
-
-ee.Initialize()
+ee.Authenticate()
+ee.Initialize(project='ee-alessia')
 
 class inputData:
     '''Instance of individual input data containing their name, file path and data type.
@@ -532,16 +534,6 @@ class inputs:
         predummy = self.model_input[self.model_input.columns[~self.model_input.columns.isin(['id'])]]
         xList = []
 
-        # # if the 2d arrays have been dummified, then the following is no more necessary.
-        # for i in self.names:
-        #     if not i == 'landslide_ids':
-        #         if self.model_inputs[i].dtype == 'categorical':
-        #             xList.append(pd.get_dummies(self.model_input[i],
-        #                                         prefix = i[:4],
-        #                                         prefix_sep = '_'))
-        #             predummy = predummy.drop([i], axis=1)
-
-        # instead, just get rid of the landslide column
         predummy = predummy.drop('landslide_ids', axis=1)
 
         #self.x = pd.concat(xList.append(predummy))
@@ -555,6 +547,127 @@ class inputs:
             'Drop the landslide IDs before running the model.'
             )
         return self.x, self.y
+    
+    # Perhaps natural_breaks and frequency ratio should go to another class, class statistics or so?
+    # They are not inputs nor main outputs
+    def natural_breaks(self, x, num_classes=5):
+        '''
+        Applies the Jenks natural breaks to the numerical data inputs
+
+        :param x: pandas.dataframe
+            Input dataset flattened from array to 1-dimensional data (pandas.dataframe)
+
+        :param num_classes:
+            number of classes to apply to the Jenks natural breaks
+
+        :return:
+            reclassified variables and their corresponding thresholds
+        '''
+
+        # Now it is also copying the categorical data columns
+        categorized_df = x.copy()
+
+        thresholds_df = pd.DataFrame(index=range(int(num_classes) + int(1)), columns=x.columns)
+        
+        for k, v in self.model_inputs.items():
+            if v.dtype == 'numerical':
+            
+                data = x[k]
+
+                # Apply Jenks natural breaks
+                jenks = JenksNaturalBreaks(n_classes=num_classes)
+                jenks.fit(data)
+
+                if len(np.unique(jenks.breaks_)) != len((jenks.breaks_)):
+                    print("CAUTION\n"
+                          f"The Jenks Natural Breaks number of classes is not suited for {k}\n"
+                          f"... skipping variable {k}"
+                          )
+                else:
+                    # Categorize data based on the breaks
+                    categorized_data = pd.cut(data, bins=jenks.breaks_, labels=False, include_lowest=True)
+
+                    # Update the DataFrame
+                    categorized_df[k] = categorized_data
+
+                    # Save thresholds used in another DataFrame
+                    thresholds_df[k] = jenks.breaks_
+        
+        # Keep only the columns with int64 dtype, these correspond to the numerical cols
+        categorized_df = categorized_df.select_dtypes(include=['int64'])
+        # Keep same columns as for categorized_df
+        same_cols = thresholds_df.columns.intersection(categorized_df.columns)
+        thresholds_df = thresholds_df[same_cols]
+
+        return categorized_df, thresholds_df
+
+
+    def frequency_ratio(self, x, y, data_type):
+        '''
+        Computes the frequency ratio for each input data based on occurrence or non-occurrence of
+        landslides.
+
+        :param x: pandas.dataframe
+            Input dataset flattened from array to 1-dimensional data (pandas.dataframe)
+
+        :param y: pandas.dataframe
+            pandas.dataframe containing classes assigned to each row of input data.
+            0 = no landslide; 1 = landslide
+
+        :return: DataFrame of frequency ratio
+        '''
+
+        # only for numerical data
+        categorized_df, thresholds_df = self.natural_breaks(x)
+
+        # Combine input data and landslide occurrence for numerical data
+        df_numerical = pd.concat([categorized_df, y], axis=1)
+
+        # Combine input data and landslide occurrence for categorical data
+        df_categorical = pd.concat([x, y], axis=1)
+        numerical_cols = categorized_df.columns
+        df_categorical = df_categorical.drop(columns=numerical_cols)
+
+       # Calculate frequency ratio for each input data type
+        freq_ratios = {}
+        As = len(df_numerical)
+
+        for k, v in self.model_inputs.items():
+
+            if data_type == "numerical" and v.dtype == 'numerical':
+
+                Fci = df_numerical[df_numerical['id'] == 1][k].value_counts()
+                Fs = df_numerical[df_numerical['id'] == 0][k].value_counts()
+                Aci = df_numerical[k].value_counts()
+
+                freq_ratio = (Fci / Fs) / (Aci / As)
+                freq_ratios[k] = freq_ratio.fillna(0)  # Fill NaN with 0 for categories not present in non-landslide data
+            
+            elif data_type == "categorical" and v.dtype == 'categorical':
+                # combine the individual columns of a given variable back to a combined one
+                df_filtered = df_categorical.copy()
+                df_filtered = df_filtered.filter(like=k[:4])
+                df_filtered.loc[:, 'combined'] = df_filtered.idxmax(axis=1)
+                df_filtered['combined'] = df_filtered['combined'].str.extract(r'(\d+\.\d+)').astype(float)
+                df_filtered.loc[:, 'id'] = df_categorical['id']
+
+                Fci = df_filtered[df_filtered['id'] == 1]['combined'].value_counts()
+                Fs = df_filtered[df_filtered['id'] == 0]['combined'].value_counts()
+                Aci = df_filtered['combined'].value_counts()
+
+                freq_ratio = (Fci / Fs) / (Aci / As)
+                freq_ratios[k] = freq_ratio.fillna(0)
+
+
+        # Convert frequency ratios to DataFrame
+        freq_ratios_df = pd.DataFrame.from_dict(freq_ratios)
+
+        if data_type == "categorical":
+            return freq_ratios_df
+        
+
+        return freq_ratios_df, thresholds_df
+
 
     def run_model(self,
                   model: str,
@@ -586,6 +699,8 @@ class inputs:
         print('Training and predicting values...')
 
         # Arrays are taken but the last ID array is skipped of course
+        # [:-1,] correspond to X and the last one is Y (landslide yes or no)
+        # probabilities (2, 2255, 4532), self.arrays(13, 2255, 4532)
         lx_model.predict_proba(self.arrays[:-1,:,:], estimator = lx_model.bestModel,
                                scaler = lx_model.scaler,
                                file_path = self.output_dir / f'result_{model}.tif',

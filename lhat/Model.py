@@ -8,6 +8,9 @@ from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import confusion_matrix
+from sklearn.metrics import make_scorer, roc_auc_score
+from sklearn.metrics import RocCurveDisplay
+import matplotlib.pyplot as plt
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
 import joblib
@@ -82,6 +85,7 @@ class MachineLearning:
         '''
         Trains the machine learning model of choice and performs self parameterisation
         based on GridSearchCV. Parameters achieving the highest accuracy are selected.
+        Parameters achieving the highest AUC are selected.
 
         :param baselineModel:
             This is the model that is used for training (based on choice by user, either
@@ -94,9 +98,12 @@ class MachineLearning:
             The best model
         '''
 
-        #Cross-Validation
+        # Cross-Validation
+        auc_scorer = make_scorer(roc_auc_score)
+
         # Instantiate the grid search model
         grid_search = GridSearchCV(estimator=baselineModel, param_grid=modelParameters,
+                                   scoring=auc_scorer,
                                    cv=5, n_jobs=-1, verbose=1)
 
         # Fit the grid search to the data
@@ -105,17 +112,24 @@ class MachineLearning:
 
         #Evaluate the best model
         best_model = grid_search.best_estimator_
-        best_model_accuracy_train= self.evaluateTrainedModel(best_model, self.X_train, self.y_train)
-        best_model_accuracy_test = self.evaluateTrainedModel(best_model, self.X_test, self.y_test)
 
-        print('best model accuracy on train set: \n', best_model_accuracy_train)
-        print('best model accuracy on test set: \n', best_model_accuracy_test)
+        best_model_auc_train = self.evaluateTrainedModel(best_model, self.X_train, self.y_train, 'train')
+        best_model_auc_test = self.evaluateTrainedModel(best_model, self.X_test, self.y_test, 'test')
 
+        # best_model_accuracy_train = self.evaluateTrainedModel(best_model, self.X_train, self.y_train)
+        # best_model_accuracy_test = self.evaluateTrainedModel(best_model, self.X_test, self.y_test)
+
+        # print('best model accuracy on train set: \n', best_model_accuracy_train)
+        # print('best model accuracy on test set: \n', best_model_accuracy_test)
+
+        print('best model AUC on train set: \n', best_model_auc_train)
+        print('best model AUC on test set: \n', best_model_auc_test)
+        
         return best_model
 
-    def evaluateTrainedModel(self, model, X , y):
+    def evaluateTrainedModel(self, model, X , y, data_type):
         '''
-        The trained model is evaluated for accuracy and a confusion matrix is made
+        The trained model is evaluated for accuracy, AUC and a confusion matrix is made
 
         :param model:
             Machine learning model of choice paramterised by best performing in terms of accuracy
@@ -127,17 +141,29 @@ class MachineLearning:
             Actual landslide class (1 = landslide; 0 = no landslide) to compare with
             predicted class.
 
+        :param data_type:
+            str if train or test data provided, to save the ROC curve
+
         :return:
-            Prints accuracy score and confusion matrix
+            Prints accuracy score, AUC score and confusion matrix
         '''
         predictions = model.predict(X) #fit to scaled object
         accuracy = accuracy_score(y, predictions)
+        auc = roc_auc_score(y, predictions)
         confusion = pd.DataFrame(confusion_matrix(y, predictions))
         print('Model Performance')
         print('Accuracy Score = {}%'.format(accuracy * 100))
+        print('AUC = {}%'.format(auc * 100))
         print('Confusion matrix = \n', confusion)
 
-        return accuracy
+        # plot ROC curve from probabilities 
+        y_pred_probas = model.predict_proba(X)[:,1]
+        RocCurveDisplay.from_predictions(y, y_pred_probas)
+        # save for training and for testing data
+        plt.savefig(os.path.join(self.pathToSavedModel, self.model_name + f'_ROCcurve_{data_type}.png'))
+
+        return auc  
+    
 
     def logisticRegression(self):
 
@@ -232,7 +258,7 @@ class MachineLearning:
                            crs = ref.crs,
                            transform = ref.transform,
                            nodata = no_data) as dst:
-
+            # raster_stack (12, 2255, 4532)
             stack_arr = np.ma.MaskedArray(raster_stack, mask = ~np.isfinite(raster_stack), fill_value=-9999)
             result = self.probfun(stack_arr, estimator, scaler)
             result = np.ma.filled(result, fill_value = -9999)
@@ -240,7 +266,8 @@ class MachineLearning:
             dst.close()
 
         ref.close()
-        return
+        # return
+        return result
 
     def probfun(self, img, estimator, scaler):
 
@@ -253,6 +280,9 @@ class MachineLearning:
         :param estimator: The object to use to fit the data.
         :type estimator: Estimator object implementing the 'fit'
 
+        :param scaler: e.g. StandardScaler
+        :type scaler: scikit-learn scaler class
+
         :return: Multi-band raster as a 3d numpy array containing the probabilities
             associated with each class. ndarray dimensions are in the order of (class,
             row, column).
@@ -262,15 +292,15 @@ class MachineLearning:
         # reshape each image block matrix into a 2D matrix
         # first reorder into rows, cols, bands (transpose)
         # then resample into 2D array (rows=sample_n, cols=band_values)
-
-        n_features, rows, cols = img.shape[0], img.shape[1], img.shape[2]
-        mask2d = img.mask.any(axis=0)
+        # img is a masked array of shape (12, 2255, 4532)
+        n_features, rows, cols = img.shape[0], img.shape[1], img.shape[2]  # columns of x, for categorical values we have multiple columns
+        mask2d = img.mask.any(axis=0)  # mask of feature values
         n_samples = rows * cols
-        flat_pixels = img.transpose(1, 2, 0).reshape((n_samples, n_features))
+        flat_pixels = img.transpose(1, 2, 0).reshape((n_samples, n_features)) # tot pixels per feature
         flat_pixels = flat_pixels.filled(0)
 
 
-        # predict probabilities
+        # predict probabilities, predict_proba takes shape (n_samples, n_features)
         result_proba = estimator.predict_proba(scaler.transform(flat_pixels))
 
         # reshape class probabilities back to 3D image [iclass, rows, cols]
