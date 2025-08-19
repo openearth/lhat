@@ -10,11 +10,14 @@
 
 from lhat import IO as io
 
+# folder = 'Liguria_flash_floods'
+folder='test'
+
 project = io.inputs(
 
     # Define a project name. This will be the name of the folder in which
     # your results are stored in
-    project_name = 'Liguria_test',
+    project_name = folder,
 
     # The crs defined here will dictate which crs your input data is reprojected
     # to, as well as your final result.
@@ -22,7 +25,7 @@ project = io.inputs(
 
     # Provide a path to your landslide points. This is COMPULSORY for the model
     # to work.
-    landslide_points = './Projects/Liguria_test/Input/flash_floods_Liguria.json',
+    landslide_points = f'./Projects/{folder}/Input/flash_floods_v3.geojson',
 
     # Defining a random state (any integer) allows results to be reproducible
     random_state = 101,
@@ -35,76 +38,35 @@ project = io.inputs(
             [-77.73174142, 18.34868174],
             [-77.73174142, 18.02046626]],
 
-    # The following are inputs that are possible to use within LHAT.
-    # 3 choices for filepaths are: your_file_path, 'online', None.
-    #       your_file_path = path to the respective file in string
-    #       'online'       = an online, typically global source is relied on instead.
-    #                        For datasets that are calculated from another dataset
-    #                        such as slope/aspect/roughness, leave as 'online'.
-    #       None           = None as an argument means that the dataset is NOT
-    #                        considered as input into the model.
-    #
-    # Data type is critical to define as categorical and numerical data undergo
-    # different data treatments.
-    #
-    # For 'reference', take care that if an online dataset is used as the reference,
-    # bbox arguments define the grid extent, while the pixel_size argument below
-    # defines the resolution of your reference (and therefore, your output) dataset.
-    # inputs = {
-    #     'dem': {'filepath': 'online',
-    #             'data_type': 'numerical'},
-    #     'slope': {'filepath': 'online',
-    #               'data_type': 'numerical'},
-    #     'aspect': {'filepath': 'online',
-    #                 'data_type': 'numerical'},
-    #     # 'lithology': {'filepath': 'online',
-    #     #                 'data_type': 'categorical'},
-    #     'prox_road': {'filepath': ".\Projects\jamaica-test\Input\prox_roads.tif",
-    #                   'data_type': 'numerical'},
-    #     'prox_river': {'filepath': ".\Projects\jamaica-test\Input\prox_rivers.tif",
-    #                     'data_type': 'numerical'},
-    #     'reference': 'dem'
-    #     },
 
     inputs = {
-        'dem': {'filepath': '.\Projects\Liguria_test\Input\dem_3044_Liguria.tif',
+        'dem': {'filepath': f'.\Projects\{folder}\Input\dem_3044_Liguria.tif',
                 'data_type': 'numerical'},
-        # 'hand': {'filepath': '.\Projects\Liguria_test\Input\hand_3044_Liguria.tif',
-        #          'data_type': 'numerical'},
-        'landcover': {'filepath': '.\Projects\Liguria_test\Input\landcover_3044_Liguria.tif',
+        'prox_rivers': {'filepath': f'.\Projects\{folder}\Input\distance_to_rivers.tif',
+                'data_type': 'numerical'},
+        'landcover': {'filepath': f'.\Projects\{folder}\Input\landcover_Liguria.tif',
                 'data_type': 'categorical'},
-        # 'lithology': {'filepath': '.\Projects\Liguria_test\Input\lithology_3044_Liguria.tif',
-        #         'data_type': 'categorical'},
-        # 'aspect': {'filepath': r'.\Projects\Liguria_test\Input\aspect_3044_Liguria.tif',
-        #         'data_type': 'numerical'},
-        'curvature': {'filepath': '.\Projects\Liguria_test\Input\curvature_3044_Liguria.tif',
+        'lithology': {'filepath': f'.\Projects\{folder}\Input\Lithology1_Liguria.tif',
+                'data_type': 'categorical'},
+        'aspect': {'filepath': rf'.\Projects\{folder}\Input\aspect_Liguria.tif',
                 'data_type': 'numerical'},
-        # 'slope': {'filepath': '.\Projects\Liguria_test\Input\slope_3044_Liguria.tif',
-        #         'data_type': 'numerical'},
-        # 'ap': {'filepath': r'.\Projects\Liguria_test\Input\prec_ap_3044_Liguria.tif',
-        #         'data_type': 'numerical'},
-        # 'NDVI2017': {'filepath': r'.\Projects\Liguria_test\Input\ndvi_3044_Liguria.tif',
-        #         'data_type': 'numerical'},
-        # '3hp': {'filepath': r'.\Projects\Liguria_test\Input\prec_3hp_3044_Liguria.tif',
-        #         'data_type': 'numerical'},
-        '6hp': {'filepath': r'.\Projects\Liguria_test\Input\prec_6hp_3044_Liguria.tif',
+        'curvature': {'filepath': f'.\Projects\{folder}\Input\curvature_Liguria.tif',
                 'data_type': 'numerical'},
-        # '12hp': {'filepath': r'.\Projects\Liguria_test\Input\prec_12hp_3044_Liguria.tif',
-        #         'data_type': 'numerical'},
-        # '24hp': {'filepath': r'.\Projects\Liguria_test\Input\prec_24hp_3044_Liguria.tif',
-        #         'data_type': 'numerical'},
-        # 'twi': {'filepath': r'.\Projects\Liguria_test\Input\twi_3044_Liguria.tif',
-        #         'data_type': 'numerical'},
-        # 'spi': {'filepath': '.\Projects\Liguria_test\Input\spi_3044_Liguria.tif',
-        #         'data_type': 'numerical'},
-        # 'prox_river': {'filepath': '.\Projects\Liguria_test\Input\prox_rivers_3044_Liguria.tif',
-        #         'data_type': 'numerical'},
-        # 'prox_road': {'filepath': '.\Projects\Liguria_test\Input\prox_roads_3044_Liguria.tif',
-        #         'data_type': 'numerical'},
+        'slope': {'filepath': f'.\Projects\{folder}\Input\slope_Liguria.tif',
+                'data_type': 'numerical'},
+        'NDVI2017': {'filepath': rf'.\Projects\{folder}\Input\NDVI2017_annual_4326_Liguria.tif',
+                'data_type': 'numerical'},
+        'twi': {'filepath': rf'.\Projects\{folder}\Input\twi_Liguria.tif',
+                'data_type': 'numerical'},
+        'spi': {'filepath': f'.\Projects\{folder}\Input\spi_Liguria.tif',
+                'data_type': 'numerical'},
+        'prox_roads': {'filepath': f'.\Projects\{folder}\Input\prox_road_3044.tif',
+                'data_type': 'numerical'},
+        
         'reference': 'dem'
     },
 
-    no_data = -9999,  # Optional argument to define no_data value. Propogates
+    no_data = -9999,  # Optional argument to define no_data value. Propagates
                         # for all processing of input files.
 
     pixel_size = 1000,    # Optional argument to define pixel size.
@@ -119,7 +81,7 @@ project = io.inputs(
 # model.
 x, y = project.generate_xy()
 
-# TODO: include a no data value, now the smallest value considered for DEM is 1 and not 0!
+# TODO: if error in jenks.fit(data) skip! 
 project.natural_breaks(x)
 
 # get frequency ratio and thresholds for categorical data
@@ -136,16 +98,12 @@ df_FR_numerical, df_thresholds = project.frequency_ratio(
     data_type='numerical'
 )
 
-# x = x.drop(columns=['landslide_ids'])
+# # export dataframes
+df_FR_categorical.to_csv(f'.\Projects\{folder}\Output\FR_categorical.csv')
+df_FR_numerical.to_csv(f'.\Projects\{folder}\Output\FR_numerical.csv')
+df_thresholds.to_csv(f'./Projects/{folder}/Output/threshold_values.csv')
 
-# As an example
-# for m in ['SVM', 'RF', 'LR']:
-#     project.run_model(
-#         x = x,
-#         y = y,
-#         model = m,
-#         modelExist = False
-#         )
+# x = x.drop(columns=['landslide_ids'])
 
 project.run_model(
     x = x,
@@ -153,3 +111,38 @@ project.run_model(
     model = 'LR',
     modelExist = False
     )
+
+
+# As an example
+for m in ['LR']:
+    trained_model = project.run_model(
+        x = x,
+        y = y,
+        model = m,
+        modelExist = False
+        )
+    
+model_names = [ 'LR']
+models = {}
+scalers = {}
+
+# plot ROC curves for multiple models
+import joblib
+import matplotlib.pyplot as plt
+from sklearn.metrics import RocCurveDisplay
+
+for m in model_names:
+    models[m] = joblib.load(f'./Projects/{folder}/Intermediate/{m}_bestModel.sav')
+    scalers[m] = joblib.load(f'./Projects/{folder}/Intermediate/{m}_scaler.sav')
+
+X_test = joblib.load(f'./Projects/{folder}/Intermediate/X_test.sav')
+y_test = joblib.load(f'./Projects/{folder}/Intermediate/y_test.sav')
+
+plt.figure(figsize=(8, 6))
+for m in model_names:
+    X_test_scaled = scalers[m].transform(X_test)  # Use your test data here
+    y_pred_proba = models[m].predict_proba(X_test_scaled)[:, 1]
+    RocCurveDisplay.from_predictions(y_test, y_pred_proba, name=m, ax=plt.gca())
+plt.title("ROC Curves for Multiple Models")
+plt.legend()
+plt.show()
