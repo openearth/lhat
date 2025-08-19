@@ -46,6 +46,9 @@ class MachineLearning:
             # split X and y to train and test sets
             self.scaler = self.trainTestSplit()
 
+            # save the X and y test sets to reuse for the AUC curve
+            joblib.dump(self.X_test, os.path.join(self.pathToSavedModel, 'X_test.sav'))
+            joblib.dump(self.y_test, os.path.join(self.pathToSavedModel, 'y_test.sav'))
 
             # train the selected model
             if self.model_name == 'SVM':
@@ -132,7 +135,7 @@ class MachineLearning:
         The trained model is evaluated for accuracy, AUC and a confusion matrix is made
 
         :param model:
-            Machine learning model of choice paramterised by best performing in terms of accuracy
+            Machine learning model of choice parametrised by best performing in terms of accuracy
 
         :param X:
             Input training data to perform accuracy scoring on
