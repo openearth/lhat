@@ -105,16 +105,16 @@ df_thresholds.to_csv(f'./Projects/{folder}/Output/threshold_values.csv')
 
 # x = x.drop(columns=['landslide_ids'])
 
-project.run_model(
-    x = x,
-    y = y,
-    model = 'LR',
-    modelExist = False
-    )
+# project.run_model(
+#     x = x,
+#     y = y,
+#     model = 'LR',
+#     modelExist = False
+#     )
 
 
 # As an example
-for m in ['LR']:
+for m in ['LR', 'RF', 'SVM']:
     trained_model = project.run_model(
         x = x,
         y = y,
@@ -122,27 +122,28 @@ for m in ['LR']:
         modelExist = False
         )
     
-model_names = [ 'LR']
-models = {}
-scalers = {}
+
+#%%
+# model_names = [ 'LR']
+# models = {}
+# scalers = {}
 
 # plot ROC curves for multiple models
-import joblib
-import matplotlib.pyplot as plt
-from sklearn.metrics import RocCurveDisplay
+# import joblib
+# import matplotlib.pyplot as plt
+# from sklearn.metrics import RocCurveDisplay
 
-for m in model_names:
-    models[m] = joblib.load(f'./Projects/{folder}/Intermediate/{m}_bestModel.sav')
-    scalers[m] = joblib.load(f'./Projects/{folder}/Intermediate/{m}_scaler.sav')
+# for m in model_names:
+#     models[m] = joblib.load(f'./Projects/{folder}/Intermediate/{m}_bestModel.sav')
+#     scalers[m] = joblib.load(f'./Projects/{folder}/Intermediate/{m}_scaler.sav')
 
-X_test = joblib.load(f'./Projects/{folder}/Intermediate/X_test.sav')
-y_test = joblib.load(f'./Projects/{folder}/Intermediate/y_test.sav')
+# X_test = joblib.load(f'./Projects/{folder}/Intermediate/X_test.sav')
+# y_test = joblib.load(f'./Projects/{folder}/Intermediate/y_test.sav')
 
-plt.figure(figsize=(8, 6))
-for m in model_names:
-    X_test_scaled = scalers[m].transform(X_test)  # Use your test data here
-    y_pred_proba = models[m].predict_proba(X_test_scaled)[:, 1]
-    RocCurveDisplay.from_predictions(y_test, y_pred_proba, name=m, ax=plt.gca())
-plt.title("ROC Curves for Multiple Models")
-plt.legend()
-plt.show()
+# plt.figure(figsize=(8, 6))
+# for m in model_names:
+#     y_pred_proba = models[m].predict_proba(X_test)[:, 1]
+#     RocCurveDisplay.from_predictions(y_test, y_pred_proba, name=m, ax=plt.gca())
+# plt.title("ROC Curves for Multiple Models")
+# plt.legend()
+# plt.show()
