@@ -576,14 +576,15 @@ class inputs:
 
                 # Apply Jenks natural breaks
                 jenks = JenksNaturalBreaks(n_classes=num_classes)
-                jenks.fit(data)
+                try:
+                    jenks.fit(data)
 
-                if len(np.unique(jenks.breaks_)) != len((jenks.breaks_)):
-                    print("CAUTION\n"
-                          f"The Jenks Natural Breaks number of classes is not suited for {k}\n"
-                          f"... skipping variable {k}"
-                          )
-                else:
+                # if len(np.unique(jenks.breaks_)) != len((jenks.breaks_)):
+                #     print("CAUTION\n"
+                #           f"The Jenks Natural Breaks number of classes is not suited for {k}\n"
+                #           f"... skipping variable {k}"
+                #           )
+                
                     # Categorize data based on the breaks
                     categorized_data = pd.cut(data, bins=jenks.breaks_, labels=False, include_lowest=True)
 
@@ -593,6 +594,9 @@ class inputs:
                     # Save thresholds used in another DataFrame
                     thresholds_df[k] = jenks.breaks_
         
+                except TypeError as e:
+                    print(f"TypeError encountered: {e} for {k} {v}")
+
         # Keep only the columns with int64 dtype, these correspond to the numerical cols
         categorized_df = categorized_df.select_dtypes(include=['int64'])
         # Keep same columns as for categorized_df
