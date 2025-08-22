@@ -164,6 +164,7 @@ class MachineLearning:
         RocCurveDisplay.from_predictions(y, y_pred_probas)
         # save for training and for testing data
         plt.savefig(os.path.join(self.pathToSavedModel, self.model_name + f'_ROCcurve_{data_type}.png'))
+        confusion.to_csv(os.path.join(self.pathToSavedModel, self.model_name + f'_confusion_matrix_{data_type}.csv'))
 
         return auc  
     
