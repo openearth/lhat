@@ -62,7 +62,7 @@ if __name__ == "__main__":
     probs = model.predict_proba(mesh)
     landslide_probs = probs[:, 1].reshape(n_grid, n_grid)
 
-    print(f"Accuracy={accuracy_score(y_test, y_pred):.2f}%")
+    print(f"Accuracy={accuracy_score(y_test, y_pred)*100:.0f}%")
 
     x_edges = np.append(0, rainfall_intensity_grid)
     y_edges = np.append(0, cumulative_rainfall_grid)
@@ -81,6 +81,22 @@ if __name__ == "__main__":
     cumulative_p = calculate_cumulative_p_landslide(rainfall_intensity_grid, cumulative_rainfall_grid, landslide_probs, p_group, opt_threshold_params)
 
     fig = plt.figure()
+    plt.imshow(hist_survival.T+hist_landslide.T, origin="lower", extent=[x_edges[0], x_edges[-1], y_edges[0], y_edges[-1]], aspect="auto", cmap="Reds")
+    plt.colorbar(label=r"#Occurences")
+    plt.xlabel("Rainfall intensity [mm/d]", fontsize=12)
+    plt.ylabel("Cumulative rainfall [mm]", fontsize=12)
+    plt.savefig(result_path/"number_occurences.png")
+    plt.close()
+
+    fig = plt.figure()
+    plt.imshow(hist_landslide.T, origin="lower", extent=[x_edges[0], x_edges[-1], y_edges[0], y_edges[-1]], aspect="auto", cmap="Reds")
+    plt.colorbar(label=r"#Landslides")
+    plt.xlabel("Rainfall intensity [mm/d]", fontsize=12)
+    plt.ylabel("Cumulative rainfall [mm]", fontsize=12)
+    plt.savefig(result_path/"number_landslides.png")
+    plt.close()
+
+    fig = plt.figure()
     lvls = [p for p in np.arange(0.1, 1.01, 0.1) if p != prob_threshold]
     contours = plt.contour(rainfall_intensity_grid, cumulative_rainfall_grid, landslide_probs, levels=lvls, colors='k')
     plt.clabel(contours, inline=True, fontsize=8, fmt="%.1f")
@@ -88,25 +104,21 @@ if __name__ == "__main__":
                                      colors='b', linewidths=2)
     plt.clabel(contours_threshold, inline=True, fontsize=8, fmt="%.1f")
     plt.imshow(landslide_ratio.T, origin="lower", extent=[x_edges[0], x_edges[-1], y_edges[0], y_edges[-1]], aspect="auto", cmap="Reds")
-    plt.colorbar(label=r"$\frac{Landslide}{Landslide+Survival}$")
+    plt.colorbar(label=r"$\frac{Landslides}{Landslides+Survivals}$")
     plt.xlabel("Rainfall intensity [mm/d]", fontsize=12)
     plt.ylabel("Cumulative rainfall [mm]", fontsize=12)
-    plt.savefig(result_path/"landslide_threshold.png")
+    plt.savefig(result_path/"landslide_ratio_regression.png")
     plt.close()
 
     fig = plt.figure()
-    # lvls = [p for p in np.arange(0.1, 1.01, 0.1) if p != prob_threshold]
-    # contours = plt.contour(rainfall_intensity_grid, cumulative_rainfall_grid, cumulative_p, levels=lvls, colors='k')
-    contours = plt.contour(rainfall_intensity_grid[1:], cumulative_rainfall_grid[1:], cumulative_p, colors='k')
-    # plt.clabel(contours, inline=True, fontsize=8, fmt="%.1f")
-    # contours_threshold = plt.contour(rainfall_intensity_grid, cumulative_rainfall_grid, landslide_probs, levels=[0.5],
-    #                                  colors='b', linewidths=2)
-    # plt.clabel(contours_threshold, inline=True, fontsize=8, fmt="%.1f")
+    threshold_line = opt_threshold_params - rainfall_intensity_grid
+    plt.plot(rainfall_intensity_grid, threshold_line, c="g", label="Threshold")
     plt.imshow(landslide_ratio.T, origin="lower", extent=[x_edges[0], x_edges[-1], y_edges[0], y_edges[-1]], aspect="auto", cmap="Reds")
     plt.colorbar(label=r"$\frac{Landslide}{Landslide+Survival}$")
     plt.xlabel("Rainfall intensity [mm/d]", fontsize=12)
     plt.ylabel("Cumulative rainfall [mm]", fontsize=12)
-    plt.savefig(result_path/"landslide_p_volumes.png")
+    plt.legend()
+    plt.savefig(result_path/"rainfall_threshold.png")
     plt.close()
 
     fig, ax = plt.subplots()
@@ -117,6 +129,6 @@ if __name__ == "__main__":
     ax.set_ylabel("Volume (Σ[P(L|G)*P(G)])", fontsize=12)
     ax2.set_ylabel("|Volume - Volume test|", fontsize=12)
     ax.grid()
-    plt.savefig(result_path/"volumes.png")
+    plt.savefig(result_path/"volume_optimization.png")
     plt.close()
 
