@@ -23,7 +23,7 @@ case $yn in
 esac
 
 python -m rain_modeling.rain_landslide_modeling \
-  --filename $IDX \
+  --file_path $IDX \
   --x_feat intensity \
   --x_feat cumulative \
   $LOG_X

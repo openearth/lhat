@@ -99,10 +99,10 @@ def make_plots(model, X, y, feats, path, n_grid, log_X):
     plt.close()
 
 
-def main(filename, x_feat="Intensity [mm/d]", y_feat="Cumulative rainfall [mm]", n_grid=50, log_X=False):
+def main(file_path, x_feat="Intensity [mm/d]", y_feat="Cumulative rainfall [mm]", n_grid=50, log_X=False):
 
     script_path = Path(__file__).parent
-    data_path = filename
+    data_path = file_path
     result_path = script_path.parent / f"results/{data_path.stem}_log_{log_X}"
     result_path.mkdir(parents=True, exist_ok=True)
 
@@ -145,6 +145,10 @@ def main(filename, x_feat="Intensity [mm/d]", y_feat="Cumulative rainfall [mm]",
 
     y_pred = model.predict(X_test)
 
+    probs = model.predict_proba(df[feats].values)
+    df["landslide_probs"] = probs[:, 1]
+    df.to_csv(result_path/file_path.name, index=False)
+
     print(f"Accuracy={accuracy_score(y_test, y_pred) * 100:.0f}%")
 
     make_plots(model, X, y, feats, result_path, n_grid, log_X)
@@ -157,17 +161,17 @@ if __name__ == "__main__":
     files = [f for f in data_path.iterdir() if f.is_file()]
 
     parser = ArgumentParser()
-    parser.add_argument("--filename", type=int, default=1, help="Select a file by its number (see list below)")
+    parser.add_argument("--file_path", type=int, default=1, help="Select a file by its number (see list below)")
     parser.add_argument("--x_feat", default="intensity")
     parser.add_argument("--y_feat", default="cumulative")
     parser.add_argument("--n_grid", type=int, default=50)
     parser.add_argument("--log_X", action="store_true")
     args = parser.parse_args()
 
-    filename = files[args.filename-1]
+    file_path = files[args.file_path-1]
 
     main(
-        filename=filename,
+        file_path=file_path,
         x_feat=args.x_feat,
         y_feat=args.y_feat,
         n_grid=args.n_grid,
