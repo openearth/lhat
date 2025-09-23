@@ -606,7 +606,7 @@ class inputs:
         return categorized_df, thresholds_df
 
 
-    def frequency_ratio(self, x, y, data_type):
+    def frequency_ratio(self, x, y, data_type, num_classes=5, classes_dict=None):
         '''
         Computes the frequency ratio for each input data based on occurrence or non-occurrence of
         landslides.
@@ -618,11 +618,21 @@ class inputs:
             pandas.dataframe containing classes assigned to each row of input data.
             0 = no landslide; 1 = landslide
 
+        :param data_type: str
+            Choose either 'categorical' or 'numerical' data type to compute frequency ratio for.
+        
+        :param num_classes: int (default: 5)
+            Number of classes to apply to the Jenks natural breaks for numerical data.
+
+        :param classes_dict: dict, optional
+            Dictionary of classes to group categorical data.
+            Example: {'group1': [9], 'group2': [1, 15], 'group3': [4, 7, 14, 16], 'group4': [3, 19]}
+
         :return: DataFrame of frequency ratio
         '''
 
         # only for numerical data
-        categorized_df, thresholds_df = self.natural_breaks(x)
+        categorized_df, thresholds_df = self.natural_breaks(x, num_classes=num_classes)
 
         # Combine input data and landslide occurrence for numerical data
         df_numerical = pd.concat([categorized_df, y], axis=1)
@@ -634,6 +644,8 @@ class inputs:
 
        # Calculate frequency ratio for each input data type
         freq_ratios = {}
+        areas = {}
+        Fs = len(df_numerical[df_numerical['id'] == 1])
         As = len(df_numerical)
 
         for k, v in self.model_inputs.items():
@@ -641,8 +653,10 @@ class inputs:
             if data_type == "numerical" and v.dtype == 'numerical':
 
                 Fci = df_numerical[df_numerical['id'] == 1][k].value_counts()
-                Fs = df_numerical[df_numerical['id'] == 0][k].value_counts()
                 Aci = df_numerical[k].value_counts()
+                areas[k] = Aci
+                # TODO: export Aci or compute FR based on quantiles instead of Jenks
+                # use pd.qcut(x, 4, retbins=True)
 
                 freq_ratio = (Fci / Fs) / (Aci / As)
                 freq_ratios[k] = freq_ratio.fillna(0)  # Fill NaN with 0 for categories not present in non-landslide data
@@ -651,13 +665,24 @@ class inputs:
                 # combine the individual columns of a given variable back to a combined one
                 df_filtered = df_categorical.copy()
                 df_filtered = df_filtered.filter(like=k[:4])
-                df_filtered.loc[:, 'combined'] = df_filtered.idxmax(axis=1)
-                df_filtered['combined'] = df_filtered['combined'].str.extract(r'(\d+\.\d+)').astype(float)
                 df_filtered.loc[:, 'id'] = df_categorical['id']
+                # TODO: now I'm assuming only one dict but we have two categorical vars, so I should be able to pass two dicts
+                # now it works with one var and one dict
+                if classes_dict is not None:
+                    for key, value in classes_dict.items():
+                        df_filtered[key] = 0
+                        for val in value:
+                            df_filtered[key] += df_filtered[f'{k[:4]}_{val}.0']
 
-                Fci = df_filtered[df_filtered['id'] == 1]['combined'].value_counts()
-                Fs = df_filtered[df_filtered['id'] == 0]['combined'].value_counts()
-                Aci = df_filtered['combined'].value_counts()
+                    Fci = df_filtered[df_filtered['id'] == 1].loc[
+                        :, df_filtered.columns.isin(classes_dict.keys())].sum(axis=0)
+                    Aci = df_filtered.loc[:, df_filtered.columns.isin(classes_dict.keys())].sum(axis=0)
+     
+                else:
+                    
+                    Fci = df_filtered[df_filtered['id'] == 1].iloc[:,:-1].sum(axis=0)
+                    Aci = df_filtered.iloc[:,:-1].sum(axis=0)
+
 
                 freq_ratio = (Fci / Fs) / (Aci / As)
                 freq_ratios[k] = freq_ratio.fillna(0)
@@ -665,12 +690,13 @@ class inputs:
 
         # Convert frequency ratios to DataFrame
         freq_ratios_df = pd.DataFrame.from_dict(freq_ratios)
+        areas_df = pd.DataFrame.from_dict(areas)
 
         if data_type == "categorical":
             return freq_ratios_df
         
 
-        return freq_ratios_df, thresholds_df
+        return freq_ratios_df, thresholds_df, areas_df
 
 
     def run_model(self,
