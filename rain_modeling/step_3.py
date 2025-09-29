@@ -19,14 +19,21 @@ def make_histogram(X: NDArray, y: NDArray, n_grid: int = 50) -> Dict[str, List[f
 
     x_edges = np.append(0, x_grid)
     y_edges = np.append(0, y_grid)
+
+    n_rainfall, _, _ = np.histogram2d(X[:, 0], X[:, 1], bins=[x_edges, y_edges])
+    n_landslide, _, _ = np.histogram2d(X[y == 1, 0], X[y == 1, 1], bins=[x_edges, y_edges])
+
     p_rainfall, _, _ = np.histogram2d(X[:, 0], X[:, 1], bins=[x_edges, y_edges], density=True)
     p_landslide, _, _ = np.histogram2d(X[y == 1, 0], X[y == 1, 1], bins=[x_edges, y_edges], density=True)
 
     return {
+        "n_grid": n_grid,
         "x_grid": x_grid.tolist(),
         "y_grid": y_grid.tolist(),
         "x_edges": x_edges.tolist(),
         "y_edges": y_edges.tolist(),
+        "n_rainfall": p_rainfall.tolist(),
+        "n_landslide": p_landslide.tolist(),
         "p_rainfall": p_rainfall.tolist(),
         "p_landslide": p_landslide.tolist()
     }
