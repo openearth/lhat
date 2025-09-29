@@ -147,7 +147,7 @@ def main(file_path, x_feat="Intensity [mm/d]", y_feat="Cumulative rainfall [mm]"
 
     probs = model.predict_proba(df[feats].values)
     df["landslide_probs"] = probs[:, 1]
-    df.to_csv(result_path/file_path.name, index=False)
+    df.to_csv(result_path/file_path.with_suffix(".csv").name, index=False)
 
     print(f"Accuracy={accuracy_score(y_test, y_pred) * 100:.0f}%")
 
