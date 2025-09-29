@@ -48,7 +48,7 @@ def main(
 ) -> None:
 
     script_path = Path(__file__).parent
-    data_path = script_path.parent / "data"
+    data_path = script_path.parent / "data/rainfall"
 
     files = [f for f in data_path.iterdir() if f.is_file()]
     file_path = files[file_number-1]
