@@ -56,7 +56,7 @@ def plot_training_data_with_decision_boundary(clf, ax=None, support_vectors=True
 
 if __name__ == "__main__":
 
-    df = pd.read_csv('../data/LHAT.csv')
+    df = pd.read_csv('../../data/LHAT.csv')
     df = df.rename(columns={
         'Intensity (mm/hour)_occurrences': 'intensity',
         'Duration (hours)_occurrences': 'duration',
