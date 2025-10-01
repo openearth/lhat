@@ -6,16 +6,21 @@ from sklearn.metrics import r2_score
 import json
 import joblib
 from pathlib import Path
+from rain_modeling.plotting import *
 from argparse import ArgumentParser
 from numpy.typing import NDArray
 from typing import Dict, Optional, List, Tuple
 import matplotlib.pyplot as plt
 
 
-def get_quantiles(df: pd.DataFrame, n_quantiles: int = 10) -> Dict[str, List[float]]:
+def count_bins(df: pd.DataFrame, n_quantiles: int = 10) -> Dict[str, List[float]]:
 
     lsis = df["LSI"].values
     landslides = df["landslide_"].values
+
+    idx_sort = np.argsort(lsis)
+    lsis = lsis[idx_sort]
+    landslides = landslides[idx_sort]
 
     quantile_lvls = np.linspace(1/n_quantiles, 1, n_quantiles)
     lsi_quantiles = np.quantile(lsis, q=quantile_lvls)
@@ -74,8 +79,10 @@ def predict(model: LinearRegression, X: NDArray) -> NDArray:
 def main(n_quantiles: int = 10) -> None:
 
     script_path = Path(__file__).parent
-    data_path = script_path.parent / f"data/lsi"
-    result_path = script_path.parent / f"results/lsi/"
+
+    data_path = script_path.parent / "data/lsi"
+
+    result_path = script_path.parent / "results/lsi/"
     result_path.mkdir(parents=True, exist_ok=True)
 
     df = pd.read_csv(data_path/"LSI_pixels_ERA5_Pixels.csv")
@@ -85,16 +92,25 @@ def main(n_quantiles: int = 10) -> None:
 
     df = df.dropna(how="any", subset=["LSI", "landslide_"])
 
-    lsi_data = get_quantiles(df)
+    lsi_data = count_bins(df)
 
     model = fit_linear(lsi_data)
     joblib.dump(model, result_path/"linear_model.pkl")
 
-    lsi_data["lsi_bins_frequency_hat"] = predict(model, np.asarray(lsi_data["lsi_bins"]).reshape(-1, 1)).tolist()
+    equation = f"landslide frequency = g(LSI) = exp({model.intercept_.item():.3f} + {model.coef_.item():.3f} * LSI)"
+    with open(result_path/"equation.txt", "w") as f:
+        f.writelines(equation)
+
+    lsi_data["lsi_bins_frequency_hat"] = predict(model, np.asarray(lsi_data["lsi_bin_centers"]).reshape(-1, 1)).tolist()
     lsi_data["frequency_hat"] = predict(model, np.asarray(lsi_data["lsi"]).reshape(-1, 1)).tolist()
 
     with open(result_path/"lsi_data.json", "w") as f:
         json.dump(lsi_data, f, indent=4)
+
+    df["regression"] = lsi_data["frequency_hat"]
+    df.to_csv(result_path/"LSI_pixels_ERA5_Pixels.csv", index=False)
+
+    plot_lsi(lsi_data, result_path/"plots")
 
 
 if __name__ == "__main__":
@@ -103,7 +119,5 @@ if __name__ == "__main__":
     parser.add_argument("--n_quantiles", type=int, default=10)
     args = parser.parse_args()
 
-    main(
-        n_quantiles=args.n_quantiles
-    )
+    main(n_quantiles=args.n_quantiles)
 
