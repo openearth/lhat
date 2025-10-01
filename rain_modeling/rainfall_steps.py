@@ -104,9 +104,6 @@ def get_rainfall_rate(event_starts: NDArray, X: NDArray, rainfall_data: Dict[str
                 event_rate_period[i_x, i_y] = event_start.size / event_period_years
                 event_rate_bin_period[i_x, i_y] = event_start.size / bin_period_years
 
-                expon_rate_period[i_x, i_y] = event_start.size / bin_period_years
-                expon_rate_bin_period[i_x, i_y] = event_start.size / bin_period_years
-
     rainfall_data.update({
         "event_rate_bin_period": event_rate_bin_period.tolist(),
         "event_rate_period": event_rate_period.tolist()
