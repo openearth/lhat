@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from scipy.stats import poisson
+from scipy.stats import poisson, expon
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
@@ -79,43 +79,38 @@ def get_rainfall_rate(event_starts: NDArray, X: NDArray, rainfall_data: Dict[str
     y_feat = X[:, 1].copy()
 
     event_period_years = event_starts.max() - event_starts.min()
+    event_starts_norm = event_starts - event_starts.min()
 
-    poisson_lambdas = np.zeros_like(n_rainfall).astype(float)
-    poisson_lambdas_period = np.zeros_like(n_rainfall).astype(float)
+    expon_lambdas = np.zeros_like(n_rainfall).astype(float)
+    expon_lambdas_period = np.zeros_like(n_rainfall).astype(float)
+    event_rate_bin_period = np.zeros_like(n_rainfall).astype(float)
+    event_rate_period = np.zeros_like(n_rainfall).astype(float)
 
     for i_x, x_bin in enumerate(x_bins):
-
         for i_y, y_bin in enumerate(y_bins):
 
             x_cond = np.logical_and(x_feat >= x_bin.min(), x_feat <= x_bin.max())
             y_cond = np.logical_and(y_feat >= y_bin.min(), y_feat <= y_bin.max())
             conds = np.vstack((x_cond, y_cond)).T
-
             idx = np.where(np.all(conds, axis=-1))[0]
 
             if idx.size == 0:
-
                 continue
-
             else:
-
                 event_start = event_starts[idx]
+                bin_period_years = event_start.max() - event_start.min()
+                bin_period_years = bin_period_years if bin_period_years > 0 else event_period_years
+                
+                event_rate_period[i_x, i_y] = event_start.size / event_period_years
+                event_rate_bin_period[i_x, i_y] = event_start.size / bin_period_years
 
-                bin_period = event_start.max() - event_start.min()
+                expon_rate_period[i_x, i_y] = event_start.size / bin_period_years
+                expon_rate_bin_period[i_x, i_y] = event_start.size / bin_period_years
 
-                poisson_lambdas_period[i_x, i_y] = event_start.size() / event_period_years
-
-                if period > 0:
-
-                    poisson_lambdas[i_x, i_y] = event_start.size / bin_period
-
-                    pass
-                pass
-
-
-        pass
-
-
+    rainfall_data.update({
+        "event_rate_bin_period": event_rate_bin_period.tolist(),
+        "event_rate_period": event_rate_period.tolist()
+    })
 
     return rainfall_data
 
