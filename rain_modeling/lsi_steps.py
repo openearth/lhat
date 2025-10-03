@@ -82,8 +82,11 @@ def main(n_quantiles: int = 10) -> None:
 
     data_path = script_path.parent / "data/lsi"
 
-    result_path = script_path.parent / "results/lsi/"
+    result_path = script_path.parent / "results/lsi"
     result_path.mkdir(parents=True, exist_ok=True)
+
+    plot_path = script_path.parent / "results/plots"
+    plot_path.mkdir(parents=True, exist_ok=True)
 
     df = pd.read_csv(data_path/"LSI_pixels_ERA5_Pixels.csv")
 
@@ -110,7 +113,7 @@ def main(n_quantiles: int = 10) -> None:
     df["regression"] = lsi_data["frequency_hat"]
     df.to_csv(result_path/"LSI_pixels_ERA5_Pixels.csv", index=False)
 
-    plot_lsi(lsi_data, result_path/"plots")
+    plot_lsi(lsi_data, plot_path)
 
 
 if __name__ == "__main__":

@@ -5,6 +5,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from rain_modeling.utils import *
+from rain_modeling.plotting import *
 import json
 import joblib
 from pathlib import Path
@@ -128,6 +129,9 @@ def main(
     result_path = script_path.parent / f"results/rainfall/{file_path.name}"
     result_path.mkdir(parents=True, exist_ok=True)
 
+    plot_path = script_path.parent / "results/plots"
+    plot_path.mkdir(parents=True, exist_ok=True)
+
     if file_path.suffix == ".csv":
         df = pd.read_csv(file_path)
     elif file_path.suffix == ".xlsx":
@@ -138,6 +142,7 @@ def main(
     X, y = prepare_data(df, x_feat, y_feat)
 
     rainfall_data = get_density(X, y, n_grid)
+    rainfall_data.update({"x_feat": x_feat, "y_feat": y_feat})
 
     if "event_start" in df.columns:
         event_starts = pd.to_datetime(df["event_start"]).dt.year.values
@@ -151,6 +156,8 @@ def main(
 
     with open(result_path/"rainfall_data.json", "w") as f:
         json.dump(rainfall_data, f, indent=4)
+
+    plot_rainfall(rainfall_data, plot_path)
 
 
 if __name__ == "__main__":
