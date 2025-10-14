@@ -554,9 +554,10 @@ class inputs:
 
 
     # iterate through each array in the arrays stack and get FR table    
-    def FR_table(self, array, bins=4, boundaries=None):
+    def FR_table(self, array, col, bins=4, boundaries=None):
         '''
         array: numpy array
+        col: name of the variable
         bins: number of classes for jenks natural breaks
         boundaries: list of boundaries to discretize into
         '''
@@ -592,7 +593,7 @@ class inputs:
         df_FR['Aci'] = np.append(counts, np.nan)
 
         # get number of landslide pixels per class
-        counts_ls, _ = np.histogram(self.landslide_pixels[array.name], bins=bin_edges)
+        counts_ls, _ = np.histogram(self.landslide_pixels[col], bins=bin_edges)
         df_FR['Fci'] = np.append(counts_ls, np.nan)
 
         # compute frequency ratio
@@ -601,7 +602,34 @@ class inputs:
         return df_FR
 
 
-    # def iterate_FR(self, x, y, binning_dict=None):
+    def iterate_FR(self, binning_dict=None):
+        '''
+        Iterates through each array in the arrays stack and gets FR table
+        binning_dict: dictionary with variable names as keys and either number of bins
+                       or list of boundaries as values
+        '''
+        for k, v in self.model_inputs.items():
+            if v.dtype == 'numerical':
+                if binning_dict and k in binning_dict:
+                    if isinstance(binning_dict[k], list):
+                        boundaries = binning_dict[k]
+                        bins = None
+                    elif isinstance(binning_dict[k], int):
+                        bins = binning_dict[k]
+                        boundaries = None
+                    else:
+                        raise ValueError('binning_dict values must be either int or list')
+                else:
+                    bins = 4
+                    boundaries = None
+
+                array_index = self.names.index(k)
+                array = self.arrays[array_index]
+                df_FR = self.FR_table(array, col=k, bins=bins, boundaries=boundaries)
+
+                if not hasattr(self, 'FR_tables'):
+                    self.FR_tables = {}
+                self.FR_tables[k] = df_FR
 
 
     def run_model(self,

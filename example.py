@@ -11,7 +11,8 @@
 from lhat import IO as io
 
 # folder = 'Liguria_flash_floods'
-folder='test'
+# folder='flash_floods'
+folder='landslides'
 
 project = io.inputs(
 
@@ -25,7 +26,8 @@ project = io.inputs(
 
     # Provide a path to your landslide points. This is COMPULSORY for the model
     # to work.
-    landslide_points = f'./Projects/{folder}/Input/flash_floods_v3.geojson',
+    landslide_points= f'./Projects/{folder}/Input/landslides_v2.json',
+    # landslide_points = f'./Projects/{folder}/Input/flash_floods_v3.geojson',
 
     # Defining a random state (any integer) allows results to be reproducible
     random_state = 101,
@@ -81,37 +83,37 @@ project = io.inputs(
 # model.
 x, y = project.generate_xy()
 
-# TODO: if error in jenks.fit(data) skip! 
-project.natural_breaks(x)
 
-# get frequency ratio and thresholds for categorical data
+#%%
+
+import math
+binning_dict = {
+    'dem': 4,
+    'aspect': [-1, 0, math.pi/2, math.pi, 3*math.pi/2, 2*math.pi], # flat areas (no aspect),  NE, NW, SW, SE 
+    'curvature': [-99999, -0.5, 0.5, 900],
+    'prox_rivers': 4,
+    'slope': 4,
+    'NDVI2017': 4,
+    'twi': 4,
+    'spi': 4,
+    'prox_roads': 4
+}
+# project.binning(binning_dict)
+
+test = project.iterate_FR(binning_dict=binning_dict)
+
+#%%
 df_FR_categorical = project.frequency_ratio(
     x = x,
     y = y,
     data_type='categorical'
 )
 
-# get frequency ratio and thresholds for numerical data
-df_FR_numerical, df_thresholds = project.frequency_ratio(
-    x = x,
-    y = y,
-    data_type='numerical'
-)
-
-# # export dataframes
+# export dataframes
 df_FR_categorical.to_csv(f'.\Projects\{folder}\Output\FR_categorical.csv')
-df_FR_numerical.to_csv(f'.\Projects\{folder}\Output\FR_numerical.csv')
-df_thresholds.to_csv(f'./Projects/{folder}/Output/threshold_values.csv')
+#%%
 
 # x = x.drop(columns=['landslide_ids'])
-
-# project.run_model(
-#     x = x,
-#     y = y,
-#     model = 'LR',
-#     modelExist = False
-#     )
-
 
 # As an example
 for m in ['LR', 'RF', 'SVM']:
@@ -124,26 +126,31 @@ for m in ['LR', 'RF', 'SVM']:
     
 
 #%%
-# model_names = [ 'LR']
-# models = {}
-# scalers = {}
+model_names = [ 'LR', 'RF', 'SVM']
+models = {}
+scalers = {}
 
 # plot ROC curves for multiple models
-# import joblib
-# import matplotlib.pyplot as plt
-# from sklearn.metrics import RocCurveDisplay
+import joblib
+import matplotlib.pyplot as plt
+from sklearn.metrics import RocCurveDisplay
 
-# for m in model_names:
-#     models[m] = joblib.load(f'./Projects/{folder}/Intermediate/{m}_bestModel.sav')
-#     scalers[m] = joblib.load(f'./Projects/{folder}/Intermediate/{m}_scaler.sav')
+for m in model_names:
+    models[m] = joblib.load(f'./Projects/{folder}/Intermediate/{m}_bestModel.sav')
+    scalers[m] = joblib.load(f'./Projects/{folder}/Intermediate/{m}_scaler.sav')
 
-# X_test = joblib.load(f'./Projects/{folder}/Intermediate/X_test.sav')
-# y_test = joblib.load(f'./Projects/{folder}/Intermediate/y_test.sav')
+X_test = joblib.load(f'./Projects/{folder}/Intermediate/X_test.sav')
+y_test = joblib.load(f'./Projects/{folder}/Intermediate/y_test.sav')
 
-# plt.figure(figsize=(8, 6))
-# for m in model_names:
-#     y_pred_proba = models[m].predict_proba(X_test)[:, 1]
-#     RocCurveDisplay.from_predictions(y_test, y_pred_proba, name=m, ax=plt.gca())
-# plt.title("ROC Curves for Multiple Models")
-# plt.legend()
-# plt.show()
+plt.figure(figsize=(7, 5))
+for m in model_names:
+    y_pred_proba = models[m].predict_proba(X_test)[:, 1]
+    RocCurveDisplay.from_predictions(y_test, y_pred_proba, name=m, ax=plt.gca())
+plt.title(f"ROC Curves for {folder}")
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.legend()
+plt.tight_layout()
+plt.savefig(f'./Projects/{folder}/Output/ROC_Curves.png', dpi=300)
+plt.show()
+# %%
