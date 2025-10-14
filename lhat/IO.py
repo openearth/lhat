@@ -10,6 +10,8 @@ import pandas as pd
 from lhat import Model as md
 from osgeo import gdal, ogr, osr
 from jenkspy import JenksNaturalBreaks
+import math
+import jenkspy
 import matplotlib.pyplot as plt
 
 # Initialize earth engine. If this doesn't work,
@@ -514,6 +516,8 @@ class inputs:
         self.landslide_pixels['id'] = 1 # Assign 1 as landslide points
         self.landslide_pixels = self.landslide_pixels.dropna()
 
+        self.Fs = len(self.landslide_pixels)
+
         nonlx = self.arrays[~bmasks].reshape(len(self.arrays), 1, -1).transpose().tolist()
         nonlx = [i[0] for i in nonlx]
 
@@ -547,156 +551,57 @@ class inputs:
             'Drop the landslide IDs before running the model.'
             )
         return self.x, self.y
-    
-    # Perhaps natural_breaks and frequency ratio should go to another class, class statistics or so?
-    # They are not inputs nor main outputs
-    def natural_breaks(self, x, num_classes=5):
+
+
+    # iterate through each array in the arrays stack and get FR table    
+    def FR_table(self, array, bins=4, boundaries=None):
         '''
-        Applies the Jenks natural breaks to the numerical data inputs
-
-        :param x: pandas.dataframe
-            Input dataset flattened from array to 1-dimensional data (pandas.dataframe)
-
-        :param num_classes:
-            number of classes to apply to the Jenks natural breaks
-
-        :return:
-            reclassified variables and their corresponding thresholds
+        array: numpy array
+        bins: number of classes for jenks natural breaks
+        boundaries: list of boundaries to discretize into
         '''
+        # flatten the data and remove nan values
+        data = array.flatten()
+        data = data[~np.isnan(data)]  # is there a nodata value to remove too?
 
-        # Now it is also copying the categorical data columns
-        categorized_df = x.copy()
+        self.As = len(data)
 
-        thresholds_df = pd.DataFrame(index=range(int(num_classes) + int(1)), columns=x.columns)
-        
-        for k, v in self.model_inputs.items():
-            if v.dtype == 'numerical':
+        if boundaries is not None:
+            bin_edges = boundaries
+            bins = len(boundaries) - 1
+
+        elif bins is not None:
+            np.random.seed(42)
             
-                data = x[k]
+            size = math.floor(data.size / 10)
+            sample = np.random.choice(data, size=size, replace=False)  
+            bin_edges = jenkspy.jenks_breaks(sample, n_classes=bins)
+            bin_edges[0] = np.min(data)  # ensure min value is included
+            bin_edges[-1] = np.max(data)  # ensure max value is included
 
-                # Apply Jenks natural breaks
-                jenks = JenksNaturalBreaks(n_classes=num_classes)
-                try:
-                    jenks.fit(data)
-
-                # if len(np.unique(jenks.breaks_)) != len((jenks.breaks_)):
-                #     print("CAUTION\n"
-                #           f"The Jenks Natural Breaks number of classes is not suited for {k}\n"
-                #           f"... skipping variable {k}"
-                #           )
-                
-                    # Categorize data based on the breaks
-                    categorized_data = pd.cut(data, bins=jenks.breaks_, labels=False, include_lowest=True)
-
-                    # Update the DataFrame
-                    categorized_df[k] = categorized_data
-
-                    # Save thresholds used in another DataFrame
-                    thresholds_df[k] = jenks.breaks_
+        else:
+            raise ValueError('Either bins or boundaries must be provided')
         
-                except TypeError as e:
-                    print(f"TypeError encountered: {e} for {k} {v}")
+        # exclude the last edge to avoid out of bounds
+        data_classified = np.digitize(data, bins=bin_edges[:-1])
+        values, counts = np.unique(data_classified, return_counts=True)
 
-        # Keep only the columns with int64 dtype, these correspond to the numerical cols
-        categorized_df = categorized_df.select_dtypes(include=['int64'])
-        # Keep same columns as for categorized_df
-        same_cols = thresholds_df.columns.intersection(categorized_df.columns)
-        thresholds_df = thresholds_df[same_cols]
+        # create dataframe
+        df_FR = pd.DataFrame({'breaks': bin_edges})
+        df_FR['class'] = np.append(values, np.nan)
+        df_FR['Aci'] = np.append(counts, np.nan)
 
-        return categorized_df, thresholds_df
+        # get number of landslide pixels per class
+        counts_ls, _ = np.histogram(self.landslide_pixels[array.name], bins=bin_edges)
+        df_FR['Fci'] = np.append(counts_ls, np.nan)
 
+        # compute frequency ratio
+        df_FR['FR'] = (df_FR['Fci'] / self.Fs) / (df_FR['Aci'] / self.As)
 
-    def frequency_ratio(self, x, y, data_type, num_classes=5, classes_dict=None):
-        '''
-        Computes the frequency ratio for each input data based on occurrence or non-occurrence of
-        landslides.
-
-        :param x: pandas.dataframe
-            Input dataset flattened from array to 1-dimensional data (pandas.dataframe)
-
-        :param y: pandas.dataframe
-            pandas.dataframe containing classes assigned to each row of input data.
-            0 = no landslide; 1 = landslide
-
-        :param data_type: str
-            Choose either 'categorical' or 'numerical' data type to compute frequency ratio for.
-        
-        :param num_classes: int (default: 5)
-            Number of classes to apply to the Jenks natural breaks for numerical data.
-
-        :param classes_dict: dict, optional
-            Dictionary of classes to group categorical data.
-            Example: {'group1': [9], 'group2': [1, 15], 'group3': [4, 7, 14, 16], 'group4': [3, 19]}
-
-        :return: DataFrame of frequency ratio
-        '''
-
-        # only for numerical data
-        categorized_df, thresholds_df = self.natural_breaks(x, num_classes=num_classes)
-
-        # Combine input data and landslide occurrence for numerical data
-        df_numerical = pd.concat([categorized_df, y], axis=1)
-
-        # Combine input data and landslide occurrence for categorical data
-        df_categorical = pd.concat([x, y], axis=1)
-        numerical_cols = categorized_df.columns
-        df_categorical = df_categorical.drop(columns=numerical_cols)
-
-       # Calculate frequency ratio for each input data type
-        freq_ratios = {}
-        areas = {}
-        Fs = len(df_numerical[df_numerical['id'] == 1])
-        As = len(df_numerical)
-
-        for k, v in self.model_inputs.items():
-
-            if data_type == "numerical" and v.dtype == 'numerical':
-
-                Fci = df_numerical[df_numerical['id'] == 1][k].value_counts()
-                Aci = df_numerical[k].value_counts()
-                areas[k] = Aci
-                # TODO: export Aci or compute FR based on quantiles instead of Jenks
-                # use pd.qcut(x, 4, retbins=True)
-
-                freq_ratio = (Fci / Fs) / (Aci / As)
-                freq_ratios[k] = freq_ratio.fillna(0)  # Fill NaN with 0 for categories not present in non-landslide data
-            
-            elif data_type == "categorical" and v.dtype == 'categorical':
-                # combine the individual columns of a given variable back to a combined one
-                df_filtered = df_categorical.copy()
-                df_filtered = df_filtered.filter(like=k[:4])
-                df_filtered.loc[:, 'id'] = df_categorical['id']
-                # TODO: now I'm assuming only one dict but we have two categorical vars, so I should be able to pass two dicts
-                # now it works with one var and one dict
-                if classes_dict is not None:
-                    for key, value in classes_dict.items():
-                        df_filtered[key] = 0
-                        for val in value:
-                            df_filtered[key] += df_filtered[f'{k[:4]}_{val}.0']
-
-                    Fci = df_filtered[df_filtered['id'] == 1].loc[
-                        :, df_filtered.columns.isin(classes_dict.keys())].sum(axis=0)
-                    Aci = df_filtered.loc[:, df_filtered.columns.isin(classes_dict.keys())].sum(axis=0)
-     
-                else:
-                    
-                    Fci = df_filtered[df_filtered['id'] == 1].iloc[:,:-1].sum(axis=0)
-                    Aci = df_filtered.iloc[:,:-1].sum(axis=0)
+        return df_FR
 
 
-                freq_ratio = (Fci / Fs) / (Aci / As)
-                freq_ratios[k] = freq_ratio.fillna(0)
-
-
-        # Convert frequency ratios to DataFrame
-        freq_ratios_df = pd.DataFrame.from_dict(freq_ratios)
-        areas_df = pd.DataFrame.from_dict(areas)
-
-        if data_type == "categorical":
-            return freq_ratios_df
-        
-
-        return freq_ratios_df, thresholds_df, areas_df
+    # def iterate_FR(self, x, y, binning_dict=None):
 
 
     def run_model(self,
