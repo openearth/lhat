@@ -98,10 +98,19 @@ binning_dict = {
     'spi': 4,
     'prox_roads': 4
 }
-# project.binning(binning_dict)
+cat_dict = {
+    'landcover': [1,2,3,4,5,6,7],
+    'lithology': [1,3,4,7,9,14,15,16,19]
+}
 
-test = project.iterate_FR(binning_dict=binning_dict)
+project.iterate_FR(binning_dict=binning_dict)
+project.iterate_FR(binning_dict=None, cat_dict=cat_dict)
 
+for k in project.FR_tables.keys():
+    df_FR = project.FR_tables[k]
+    df_FR.to_csv(f'.\Projects\{folder}\Output\FR\FR_{k}.csv')
+
+print(project.Fs, project.As)
 #%%
 df_FR_categorical = project.frequency_ratio(
     x = x,

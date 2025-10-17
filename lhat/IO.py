@@ -391,7 +391,8 @@ class inputs:
             if v.dtype == 'categorical':
                 dd = rasterio.open(v.path, lock=False, mask=True)
                 # GeoTIFFs have a maximum of 4 bands, __.read(1) reads the 1st band number
-                dd_cats = dd.read(1).astype(np.float64)
+                dd_cats = dd.read(1).astype(np.float64)  # all masked/nodata pixels are replaced with 0!
+                # dd_cats = dd.read(1, masked = True).astype(np.float64).filled(np.nan)
                 # filter classes
                 arrays_classes = np.unique(dd_cats).tolist()
                 if self.no_data in arrays_classes:
@@ -552,6 +553,10 @@ class inputs:
             )
         return self.x, self.y
 
+    '''
+    For categorical data, the arrays are split between the different classes
+    for land cover there are 7 different classes + 0 for no data
+    '''
 
     # iterate through each array in the arrays stack and get FR table    
     def FR_table(self, array, col, bins=4, boundaries=None):
@@ -602,7 +607,7 @@ class inputs:
         return df_FR
 
 
-    def iterate_FR(self, binning_dict=None):
+    def iterate_FR(self, binning_dict=None, cat_dict=None):
         '''
         Iterates through each array in the arrays stack and gets FR table
         binning_dict: dictionary with variable names as keys and either number of bins
@@ -630,6 +635,29 @@ class inputs:
                 if not hasattr(self, 'FR_tables'):
                     self.FR_tables = {}
                 self.FR_tables[k] = df_FR
+            
+            if v.dtype == 'categorical' and cat_dict and k in cat_dict:
+                df_FR = pd.DataFrame(columns=['class', 'Aci', 'Fci', 'FR'])
+
+                rows = []
+                for c in cat_dict[k]:
+                    array_index = self.names.index(f'{k[:4]}_{int(c)}.0') 
+                    array = self.arrays[array_index]
+                    Aci = np.nansum(array)
+                    Fci = self.landslide_pixels[f'{k[:4]}_{int(c)}.0'].sum()
+                    As = np.count_nonzero(~np.isnan(array))
+                    rows.append({'class': c, 'Aci': Aci, 'Fci': Fci})
+
+                df_FR = pd.DataFrame(rows)
+
+                # As = df_FR['Aci'].sum() it seems that the sum of the individual Aci is bigger than total As
+                # perhaps when separating the classes some pixels are counted more than once?
+                df_FR['FR'] = (df_FR['Fci'] / self.Fs) / (df_FR['Aci'] / As)
+
+                if not hasattr(self, 'FR_tables'):
+                    self.FR_tables = {}
+                self.FR_tables[k] = df_FR
+
 
 
     def run_model(self,
