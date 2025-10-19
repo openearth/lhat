@@ -1,6 +1,3 @@
-import pandas as pd
-import numpy as np
-from scipy.stats import poisson, expon
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
@@ -11,7 +8,7 @@ import joblib
 from pathlib import Path
 from argparse import ArgumentParser
 from numpy.typing import NDArray
-from typing import Dict, Optional, List, Tuple
+from typing import Dict, List
 
 
 def get_density(X: NDArray, y: NDArray, n_grid: int = 50) -> Dict[str, List[float]]:
@@ -131,7 +128,7 @@ def main(
     files = [f for f in data_path.iterdir() if f.is_file()]
     file_path = files[file_number-1]
 
-    result_path = script_path.parent / f"results/rainfall/{file_path.name}"
+    result_path = script_path.parent / f"results/rainfall/{file_path.stem}"
     result_path.mkdir(parents=True, exist_ok=True)
 
     plot_path = script_path.parent / "results/plots"
