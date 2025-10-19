@@ -115,7 +115,7 @@ def plot_logistic(rainfall_data: Dict[str, List[float]], path: Path) -> None:
     im = plt.imshow(p_landslide, origin="lower", interpolation="nearest", cmap="Reds", extent=extent, aspect="auto")
     contour = plt.contour(mesh_centers[..., 0], mesh_centers[..., 1], p_mesh_centers, aspect="auto", levels=[i*0.1 for i in range(11)], colors='black')
     cbar = fig.colorbar(im)
-    cbar.set_label("Landslide probability regression [-]", fontsize=14)
+    cbar.set_label("Landslide probability [-]", fontsize=14)
     cbar.ax.get_yaxis().labelpad = 15
     plt.xlabel(f"{x_feat.title()}_rainfall", fontsize=14)
     plt.ylabel(f"{y_feat.title()}_rainfall", fontsize=14)
