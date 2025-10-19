@@ -73,12 +73,7 @@ def plot_rainfall_prob(rainfall_data: Dict[str, List[float]], path: Path) -> Non
     cbar.ax.get_yaxis().labelpad = 15
 
     ax = axs[1]
-    im = ax.imshow(
-        p_landslide,
-        origin="lower",
-        interpolation="nearest",
-        cmap="Reds"
-    )
+    im = ax.imshow(p_landslide, origin="lower", interpolation="nearest", cmap="Reds")
     ax.set_xticks(x_tick_indices)
     ax.set_xticklabels([f'{round(x_edges[i])}' for i in x_tick_indices])
     ax.set_yticks(y_tick_indices)
@@ -105,14 +100,26 @@ def plot_logistic(rainfall_data: Dict[str, List[float]], path: Path) -> None:
     y_feat = rainfall_data["y_feat"]
     mesh_centers = np.array(rainfall_data["mesh_centers"])
     p_mesh_centers = rainfall_data["p_mesh_centers"]
+    p_landslide = rainfall_data["p_landslide"]
+
+    dx = mesh_centers[1, 0, 0] - mesh_centers[0, 0, 0]
+    dy = mesh_centers[0, 1, 1] - mesh_centers[0, 0, 1]
+    extent = [
+        mesh_centers[..., 0].min() - dx / 2,
+        mesh_centers[..., 0].max() + dx / 2,
+        mesh_centers[..., 1].min() - dy / 2,
+        mesh_centers[..., 1].max() + dy / 2,
+    ]
 
     fig = plt.figure(figsize=(8, 6))
-    contour = plt.contourf(mesh_centers[..., 0], mesh_centers[..., 1], p_mesh_centers, cmap="Reds")
-    cbar = fig.colorbar(contour)
+    im = plt.imshow(p_landslide, origin="lower", interpolation="nearest", cmap="Reds", extent=extent, aspect="auto")
+    contour = plt.contour(mesh_centers[..., 0], mesh_centers[..., 1], p_mesh_centers, aspect="auto", levels=[i*0.1 for i in range(11)], colors='black')
+    cbar = fig.colorbar(im)
     cbar.set_label("Landslide probability regression [-]", fontsize=14)
     cbar.ax.get_yaxis().labelpad = 15
     plt.xlabel(f"{x_feat.title()}_rainfall", fontsize=14)
     plt.ylabel(f"{y_feat.title()}_rainfall", fontsize=14)
+    plt.clabel(contour, inline=True, fontsize=10, fmt="%.2f")
 
     plt.close()
 

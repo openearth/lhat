@@ -38,7 +38,11 @@ def get_density(X: NDArray, y: NDArray, n_grid: int = 50) -> Dict[str, List[floa
     n_landslide, _, _ = np.histogram2d(X[y == 1, 0], X[y == 1, 1], bins=[x_edges, y_edges])
 
     p_rainfall, _, _ = np.histogram2d(X[:, 0], X[:, 1], bins=[x_edges, y_edges], density=True)
-    p_landslide, _, _ = np.histogram2d(X[y == 1, 0], X[y == 1, 1], bins=[x_edges, y_edges], density=True)
+    p_rainfall_landslide, _, _ = np.histogram2d(X[y == 1, 0], X[y == 1, 1], bins=[x_edges, y_edges], density=True)
+
+    count_rainfall, _, _ =  np.histogram2d(X[:, 0], X[:, 1], bins=[x_edges, y_edges], density=False)
+    count_rainfall_landslide, _, _ = np.histogram2d(X[y == 1, 0], X[y == 1, 1], bins=[x_edges, y_edges], density=False)
+    p_landslide = np.where(count_rainfall == 0., 0., count_rainfall_landslide / count_rainfall)
 
     return {
         "n_grid": n_grid,
@@ -54,6 +58,7 @@ def get_density(X: NDArray, y: NDArray, n_grid: int = 50) -> Dict[str, List[floa
         "n_rainfall": p_rainfall.tolist(),
         "n_landslide": p_landslide.tolist(),
         "p_rainfall": p_rainfall.tolist(),
+        "p_rainfall_landslide": p_rainfall_landslide.tolist(),
         "p_landslide": p_landslide.tolist()
     }
 
@@ -163,7 +168,7 @@ def main(
 if __name__ == "__main__":
 
     parser = ArgumentParser()
-    parser.add_argument("--file_number", type=int, default=2)
+    parser.add_argument("--file_number", type=int, default=1)
     parser.add_argument("--x_feat", default="intensity")
     parser.add_argument("--y_feat", default="cumulative")
     parser.add_argument("--n_grid", type=int, default=50)
