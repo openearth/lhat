@@ -100,8 +100,12 @@ def main(n_quantiles: int = 10) -> None:
     with open(result_path/"equation.txt", "w") as f:
         f.writelines(equation)
 
+    frequency_hat = predict(model, np.asarray(lsi_data["lsi"]).reshape(-1, 1))
+    frequency_weight_hat = frequency_hat / frequency_hat.sum()
+
     lsi_data["lsi_bins_frequency_hat"] = predict(model, np.asarray(lsi_data["lsi_bin_centers"]).reshape(-1, 1)).tolist()
-    lsi_data["frequency_hat"] = predict(model, np.asarray(lsi_data["lsi"]).reshape(-1, 1)).tolist()
+    lsi_data["frequency_hat"] = frequency_hat.tolist()
+    lsi_data["frequency_weight_hat"] = frequency_weight_hat.tolist()
 
     with open(result_path/"lsi_data.json", "w") as f:
         json.dump(lsi_data, f, indent=4)
