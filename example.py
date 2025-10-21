@@ -87,16 +87,17 @@ x, y = project.generate_xy()
 #%%
 
 import math
+# to save time, we provide bins obtained from Jenks Natural Breaks
 binning_dict = {
-    'dem': 4,
+    'dem': [0, 33, 674, 1094, 2334], # from jenks
     'aspect': [-1, 0, math.pi/2, math.pi, 3*math.pi/2, 2*math.pi], # flat areas (no aspect),  NE, NW, SW, SE 
     'curvature': [-99999, -0.5, 0.5, 900],
     'prox_rivers': 4,
-    'slope': 4,
-    'NDVI2017': 4,
-    'twi': 4,
-    'spi': 4,
-    'prox_roads': 4
+    'slope': [0, 10.6, 20.4, 31.0, 69.3], # from jenks
+    'NDVI2017': [-0, 0.2, 0.5, 0.7, 0.9], # from jenks
+    'twi': [6.2, 9.8, 12.4, 16.3, 26.0], # from jenks
+    'spi': [0, 180.5, 440.2, 893, 4718.8], # from jenks
+    'prox_roads': [0, 21.6, 52.2, 95.8, 239.9] # from jenks
 }
 cat_dict = {
     'landcover': [1,2,3,4,5,6,7],
@@ -104,22 +105,18 @@ cat_dict = {
 }
 
 project.iterate_FR(binning_dict=binning_dict)
-project.iterate_FR(binning_dict=None, cat_dict=cat_dict)
 
 for k in project.FR_tables.keys():
     df_FR = project.FR_tables[k]
     df_FR.to_csv(f'.\Projects\{folder}\Output\FR\FR_{k}.csv')
 
-print(project.Fs, project.As)
-#%%
-df_FR_categorical = project.frequency_ratio(
-    x = x,
-    y = y,
-    data_type='categorical'
-)
+project.iterate_FR(binning_dict=None, cat_dict=cat_dict)
+for k in cat_dict.keys():
+    df_FR = project.FR_tables[k]
+    df_FR.to_csv(f'.\Projects\{folder}\Output\FR\FR_{k}.csv')
 
-# export dataframes
-df_FR_categorical.to_csv(f'.\Projects\{folder}\Output\FR_categorical.csv')
+print(project.Fs, project.As)
+
 #%%
 
 # x = x.drop(columns=['landslide_ids'])

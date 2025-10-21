@@ -559,7 +559,7 @@ class inputs:
     '''
 
     # iterate through each array in the arrays stack and get FR table    
-    def FR_table(self, array, col, bins=4, boundaries=None):
+    def FR_table(self, array, col, bins=None, boundaries=None):
         '''
         array: numpy array
         col: name of the variable
@@ -582,24 +582,28 @@ class inputs:
             size = math.floor(data.size / 10)
             sample = np.random.choice(data, size=size, replace=False)  
             bin_edges = jenkspy.jenks_breaks(sample, n_classes=bins)
-            bin_edges[0] = np.min(data)  # ensure min value is included
-            bin_edges[-1] = np.max(data)  # ensure max value is included
 
         else:
             raise ValueError('Either bins or boundaries must be provided')
         
+        bin_edges[0] = np.min(data)  # ensure min value is included
+        bin_edges[-1] = np.max(data)  # ensure max value is included
         # exclude the last edge to avoid out of bounds
-        data_classified = np.digitize(data, bins=bin_edges[:-1])
-        values, counts = np.unique(data_classified, return_counts=True)
-
-        # create dataframe
-        df_FR = pd.DataFrame({'breaks': bin_edges})
-        df_FR['class'] = np.append(values, np.nan)
-        df_FR['Aci'] = np.append(counts, np.nan)
-
+        data_classified = np.digitize(data, bins=bin_edges[:-1], right=False)
+        c, Aci = np.unique(data_classified, return_counts=True)
+        
         # get number of landslide pixels per class
         counts_ls, _ = np.histogram(self.landslide_pixels[col], bins=bin_edges)
-        df_FR['Fci'] = np.append(counts_ls, np.nan)
+        Fci = counts_ls
+
+        if len(c) != len(Aci) or len(c) != len(Fci) or len(c) != bins:
+            print('Warning: mismatch in lengths of class, Aci or Fci arrays')
+
+        c = np.append(c, np.nan)
+        Aci = np.append(Aci, np.nan)
+        Fci = np.append(Fci, np.nan)
+
+        df_FR = pd.DataFrame({'breaks': bin_edges,'class': c, 'Aci': Aci, 'Fci': Fci})
 
         # compute frequency ratio
         df_FR['FR'] = (df_FR['Fci'] / self.Fs) / (df_FR['Aci'] / self.As)
@@ -612,6 +616,8 @@ class inputs:
         Iterates through each array in the arrays stack and gets FR table
         binning_dict: dictionary with variable names as keys and either number of bins
                        or list of boundaries as values
+        cat_dict: dictionary with variable names as keys and list of classes as values
+        for categorical variables
         '''
         for k, v in self.model_inputs.items():
             if v.dtype == 'numerical':
@@ -625,8 +631,7 @@ class inputs:
                     else:
                         raise ValueError('binning_dict values must be either int or list')
                 else:
-                    bins = 4
-                    boundaries = None
+                    continue
 
                 array_index = self.names.index(k)
                 array = self.arrays[array_index]
