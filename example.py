@@ -10,7 +10,6 @@
 
 from lhat import IO as io
 
-# folder = 'Liguria_flash_floods'
 # folder='flash_floods'
 folder='landslides'
 
@@ -92,7 +91,7 @@ binning_dict = {
     'dem': [0, 33, 674, 1094, 2334], # from jenks
     'aspect': [-1, 0, math.pi/2, math.pi, 3*math.pi/2, 2*math.pi], # flat areas (no aspect),  NE, NW, SW, SE 
     'curvature': [-99999, -0.5, 0.5, 900],
-    'prox_rivers': 4,
+    'prox_rivers': [0, 335.4, 859.6, 1597.9, 4045.1], # from jenks
     'slope': [0, 10.6, 20.4, 31.0, 69.3], # from jenks
     'NDVI2017': [-0, 0.2, 0.5, 0.7, 0.9], # from jenks
     'twi': [6.2, 9.8, 12.4, 16.3, 26.0], # from jenks
