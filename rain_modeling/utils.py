@@ -6,13 +6,13 @@ from typing import Tuple
 def prepare_data(df: pd.DataFrame, x_feat: str, y_feat: str) -> Tuple[NDArray, NDArray]:
 
     for col in df.columns:
-        if "intensity" in col:
+        if "intensity" in col.lower():
             df = df.rename(columns={col: "Intensity [mm/d]"})
-        if "cumulative" in col:
+        if "cumulative" in col.lower():
             df = df.rename(columns={col: "Cumulative rainfall [mm]"})
-        if "duration" in col:
+        if "duration" in col.lower():
             df = df.rename(columns={col: "Duration [d]"})
-        if "occurrence" in col:
+        if "occurrence" in col.lower():
             df = df.rename(columns={col: "occurrences"})
 
     feats = [x_feat] + [y_feat]

@@ -21,14 +21,16 @@ def count_bins(df: pd.DataFrame, n_quantiles: int = 10) -> Dict[str, List[float]
     landslides = landslides[idx_sort]
 
     quantile_lvls = np.linspace(0, 1, n_quantiles+1)
-    lsi_quantiles = np.quantile(lsis, q=quantile_lvls)
-    lsi_bin_centers = (lsi_quantiles[:-1] + lsi_quantiles[1:]) / 2
+    # lsi_bins = np.quantile(lsis, q=quantile_lvls)
+    t = np.linspace(0, 1, n_quantiles)
+    lsi_bins = lsis.min() + (lsis.max() - lsis.min()) * t ** 0.5
+    lsi_bin_centers = (lsi_bins[:-1] + lsi_bins[1:]) / 2
 
-    cumulative_counts = np.array([np.sum(lsis <= quantile) for quantile in lsi_quantiles[1:]]).astype(int)
+    cumulative_counts = np.array([np.sum(lsis <= quantile) for quantile in lsi_bins[1:]]).astype(int)
     first_count = cumulative_counts[0]
     quantile_counts = np.append(first_count, np.diff(cumulative_counts))
 
-    cumulative_landslide_counts = np.array([np.count_nonzero(landslides[lsis<=quantile]) for quantile in lsi_quantiles[1:]]).astype(int)
+    cumulative_landslide_counts = np.array([np.count_nonzero(landslides[lsis<=quantile]) for quantile in lsi_bins[1:]]).astype(int)
     first_cumulative_count = cumulative_landslide_counts[0]
     quantile_landslide_counts = np.append(first_cumulative_count, np.diff(cumulative_landslide_counts))
 
@@ -38,7 +40,7 @@ def count_bins(df: pd.DataFrame, n_quantiles: int = 10) -> Dict[str, List[float]
         "lsi": lsis.tolist(),
         "landslide": landslides.tolist(),
         "quantile_lvls": quantile_lvls.tolist(),
-        "lsi_bins": lsi_quantiles.tolist(),
+        "lsi_bins": lsi_bins.tolist(),
         "lsi_bin_centers": lsi_bin_centers.tolist(),
         "pixel_counts": quantile_counts.tolist(),
         "landslide_counts": quantile_landslide_counts.tolist(),

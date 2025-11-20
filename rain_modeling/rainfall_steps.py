@@ -1,3 +1,4 @@
+import numpy as np
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
@@ -58,6 +59,29 @@ def get_density(X: NDArray, y: NDArray, n_grid: int = 50) -> Dict[str, List[floa
         "p_rainfall_landslide": p_rainfall_landslide.tolist(),
         "p_landslide": p_landslide.tolist()
     }
+
+
+def group_landslide_counts(
+        X: NDArray,
+        y: NDArray,
+        x_bins: List[float],
+        y_bins: List[float],
+        counts: NDArray
+) -> NDArray:
+
+    x_bins = np.asarray(x_bins)
+    y_bins = np.asarray(y_bins)
+
+    landslide_counts = np.zeros((x_bins.shape[0], y_bins.shape[0]), dtype=int)
+    for i, x_bin in enumerate(x_bins):
+        for j, y_bin in enumerate(y_bins):
+            mask = np.logical_and(
+                np.logical_and(X[:, 0] > x_bin.min(), X[:, 0] < x_bin.max()),
+                np.logical_and(X[:, 1] > y_bin.min(), X[:, 1] < y_bin.max())
+            )
+            landslide_counts[i, j] = counts.dot(mask)
+
+    return landslide_counts
 
 
 def fit_logistic(X: NDArray, y: NDArray) -> LogisticRegression:
@@ -141,10 +165,18 @@ def main(
     else:
         raise ValueError(f"Unknown file type {file_path.suffix}.")
 
+    if "occurrences_sum" in df.columns:
+        df["occurrences"] = df["occurrences_sum"] > 0
+        df = df.rename(columns={"occurrences_sum": "landslide_counts"})
+    df["occurrences"] = df["occurrences"].astype(int)
+
     X, y = prepare_data(df, x_feat, y_feat)
 
     rainfall_data = get_density(X, y, n_grid)
     rainfall_data.update({"x_feat": x_feat, "y_feat": y_feat})
+
+    landslide_counts = group_landslide_counts(X, y, rainfall_data["x_bins"], rainfall_data["y_bins"], df["landslide_counts"].values)
+    rainfall_data.update({"bin_landslide_counts": landslide_counts.tolist()})
 
     if "event_start" in df.columns:
         event_starts = pd.to_datetime(df["event_start"]).dt.year.values
