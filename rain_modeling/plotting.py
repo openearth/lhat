@@ -17,7 +17,7 @@ def plot_lsi(lsi_data: Dict[str, List[float]], path: Path) -> None:
 
     lsis = lsi_data["lsi"]
     lsi_bins = lsi_data["lsi_bins"]
-    frequency_hat = lsi_data["frequency_hat"]
+    frequency_hat = lsi_data["frequency_hat_sorted"]
     lsi_bin_centers = lsi_data["lsi_bin_centers"]
     landslide_frequency = lsi_data["landslide_frequency"]
 

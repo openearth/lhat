@@ -87,7 +87,12 @@ def main(
     # 1. Regional expected number of triggering events per year (for period t, with t=0 “now” and t=50 “+50 years”)
     T = round((pd.to_datetime(df_rainfall["end_time"]).max() - pd.to_datetime(df_rainfall["start_time"]).min()).days / 365, 0)
     rainfall_rate = rainfall_data["n_rainfall"] / T
-    mu_trig = np.sum(rainfall_data["n_rainfall"]*rainfall_data["p_mesh_centers"])
+    p_mesh_centers = rainfall_data["p_mesh_centers"]
+    # p_mesh_centers = np.zeros_like(rainfall_data["p_mesh_centers"])
+    # idx_intensity_rainfall = np.argmin(np.abs(rainfall_data["x_bin_centers"]-3.5))
+    # idx_cumulative_rainfall = np.argmin(np.abs(rainfall_data["y_bin_centers"]-300))
+    # p_mesh_centers[idx_intensity_rainfall, idx_cumulative_rainfall] = 1
+    mu_trig = np.sum(rainfall_data["n_rainfall"]*p_mesh_centers)
 
     # 2. Calibrate to observed regional landslide rate:
     mu_obs = df_rainfall["occurrences_sum"].sum() / T
@@ -101,7 +106,14 @@ def main(
     # assumption of a Poisson process (i.e., landslides occur independently and rarely).
     p_landslide_t = 1 - np.exp(-lams)
 
+    df_lsi["lambda"] = lams
+    df_lsi["c"] = [c] * len(lams)
+    df_lsi["mu_trig"] = [mu_trig] * len(lams)
+    df_lsi["w"] = w
     df_lsi["p_landslide"] = p_landslide_t
+
+    df_lsi.to_csv(result_path.parent/"final.csv", index=False)
+
     plot_landslide_map(df_lsi, result_path)
 
 
